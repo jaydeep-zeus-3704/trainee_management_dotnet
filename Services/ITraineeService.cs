@@ -8,10 +8,10 @@ namespace trainee_management.Services
     public interface ItraineeService
     {
         Task<List<TraineeResponse>> returnTrainees(string searchTerm);
-        Task<Trainee> getTraineeById(int id);
+        Task<Trainee?> getTraineeById(int id);
         
         Task<bool> createTrainee(CreateTraineeRequest request);
-        Task<Trainee> getTraineeByEmail(string email);
+        Task<bool> traineeAlreadyExists(string email);
 
         TraineeResponse getTraineeResponse(Trainee trainee);
 

@@ -17,7 +17,11 @@ public class TraineeController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] string? searchTerm)
-    {   
+    {
+        if (searchTerm == null)
+        {
+            return StatusCode(400,new {error="Search Term is null"});
+        }
         List<TraineeResponse> trainees=await _traineeService.returnTrainees(searchTerm);
         return StatusCode(200, new { traineesList=trainees, message = "Trainee List Fetched Sucessfully!" });
     }
@@ -25,9 +29,11 @@ public class TraineeController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateTraineeRequest request)
     {   //model validation
-        ArgumentNullException.ThrowIfNull(request); 
-        Trainee trainee=await _traineeService.getTraineeByEmail(request.Email);
-        if (trainee != null)
+        if(request.Email==null) return StatusCode(400,new {error="Email not provided"});
+        
+        
+        bool traineeAlreadyExists=await _traineeService.traineeAlreadyExists(request.Email);
+        if (traineeAlreadyExists)
         {
             return StatusCode(400, new { error = "A Trainee with this email already exists" });
         }

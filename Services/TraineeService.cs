@@ -14,7 +14,7 @@ namespace trainee_management.Services
             _context = context;
         }
 
-        public async Task<Trainee> getTraineeById(int id)
+        public async Task<Trainee?> getTraineeById(int id)
         {
             Trainee? trainee = await _context.Trainee.FindAsync(id);
             return trainee;
@@ -49,17 +49,24 @@ namespace trainee_management.Services
             return traineesList;
         }
 
-        public async Task<Trainee> getTraineeByEmail(string email)
+        public async Task<bool> traineeAlreadyExists(string email)
         {
-            Trainee trainee = await _context.Trainee.FirstOrDefaultAsync(t => t.Email == email);
-            return trainee;
+            Trainee? trainee = await _context.Trainee.FirstOrDefaultAsync(t => t.Email == email);
+            if (trainee == null)
+            {
+                return false;
+            }
+            return true;
         }
 
 
         public async Task<bool> createTrainee(CreateTraineeRequest request)
         {
-            // if req is null throw error
-
+            if (request.Email == null)
+            {
+                Console.WriteLine("Email not provided by the user");
+                return false;
+            }
             try
             {
 
@@ -105,8 +112,7 @@ namespace trainee_management.Services
 
         public async Task<bool> updateTrainee(UpdateTraineeRequest request, Trainee trainee)
         {
-            try
-            {
+          
                 trainee.FirstName = request.FirstName;
                 trainee.LastName = request.LastName;
                 trainee.Email = request.Email;
@@ -114,11 +120,7 @@ namespace trainee_management.Services
                 trainee.Status = request.Status;
                 trainee.UpdatedDate = DateTime.Today;
                 await _context.SaveChangesAsync();
-            }
-            catch (System.Exception)
-            {
-                return false;
-            }
+
 
             return true;
         }
