@@ -144,4 +144,5 @@ The base URL for all endpoints is `http://localhost:5136`.
       ```json
       {
         "message": "Trainee Updated Sucessfully"
+      }
  
