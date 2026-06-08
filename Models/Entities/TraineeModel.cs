@@ -22,8 +22,9 @@ public class Trainee
     [EmailAddress]
     public string? Email{get;set;}
     
+    [Required(ErrorMessage ="At least one skill is required")]
     [MinLength(1,ErrorMessage ="At Least one skill is required")]
-    public required List<string> TechStack{get;set;}
+    public required string TechStack{get;set;}
 
     [AllowedValues("Active", "Inactive", "Completed","active","inactive","completed")]
     [Required(ErrorMessage ="Status is required ")]

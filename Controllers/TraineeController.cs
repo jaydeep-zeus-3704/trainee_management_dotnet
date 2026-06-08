@@ -16,35 +16,36 @@ public class TraineeController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
-    {
-        return StatusCode(200, new { traineesList=_traineeService.returnTrainees(), message = "Trainee List Fetched Sucessfully !" });
+    public async Task<IActionResult> GetAll([FromQuery] string? searchTerm)
+    {   
+        List<TraineeResponse> trainees=await _traineeService.returnTrainees(searchTerm);
+        return StatusCode(200, new { traineesList=trainees, message = "Trainee List Fetched Sucessfully!" });
     }
 
     [HttpPost]
-    public IActionResult Create(CreateTraineeRequest request)
-    {   
+    public async Task<IActionResult> Create(CreateTraineeRequest request)
+    {   //model validation
    
-        Trainee trainee=_traineeService.getTraineeByEmail(request.Email);
+        Trainee trainee=await _traineeService.getTraineeByEmail(request.Email);
         if (trainee != null)
         {
             return StatusCode(400, new { error = "A Trainee with this email already exists" });
         }
-
-    
-        TraineeResponse response=_traineeService.createTrainee(request);
-        return StatusCode(201, new { response, message = "Trainee Added to Database" });
-        
-        
+        bool traineeCreated=await _traineeService.createTrainee(request);
+        if (traineeCreated)
+        {
+            return StatusCode(201, new {  message = "Trainee Added to Database" });
+        }
+        return StatusCode(400,new {error="Something went wrong"});
     }
 
 
     //get trainee details 
 
     [HttpGet("{id:int}")]
-    public IActionResult GetTraineeDetails(int id)
+    public async Task<IActionResult> GetTraineeDetails(int id)
     {
-        Trainee trainee=_traineeService.getTraineeById(id);
+        Trainee trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(400,new {error="Trainee not found with this id"});
@@ -57,30 +58,37 @@ public class TraineeController : ControllerBase
 
     //update trainee
     [HttpPut("{id:int}")]
-    public IActionResult UpdateTraineeDetails(int id,UpdateTraineeRequest request)
+    public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
-        Trainee trainee=_traineeService.getTraineeById(id);
+        Trainee trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(404,new {error="Trainee not found"});
         }
-        TraineeResponse updatedTrainee=_traineeService.updateTrainee(request,trainee);
-        return StatusCode(200,new {updatedTrainee,message="Trainee Updated Sucessfully"});
+        bool traineUpdated=await _traineeService.updateTrainee(request,trainee);
+        if (traineUpdated)
+        {
+            return StatusCode(200,new {message="Trainee Updated Sucessfully"});
+        }
+        return StatusCode(400, new {error=$"Failed to update trainee with id ${id}"});
+        
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult DeleteTrainee(int id)
+    public async Task<IActionResult> DeleteTrainee(int id)
     {
-        Trainee trainee=_traineeService.getTraineeById(id);
+        Trainee trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(404,new {error="Trainee not found try another id"});
         }
 
-        TraineeResponse deletedTrainee=_traineeService.deleteTrainee(trainee);
-
-        return StatusCode(204,new {message="Trainee Deleted Sucessfully",deletedTrainee});
-
+        _traineeService.deleteTrainee(trainee);
+     
+        return StatusCode(204,new {message="Trainee Deleted Sucessfully"});         
+        
+        
     }
 
+    
 }

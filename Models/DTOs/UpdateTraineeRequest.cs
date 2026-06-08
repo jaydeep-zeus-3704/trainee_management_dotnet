@@ -21,7 +21,7 @@ namespace trainee_management.Models.DTOs
         public string? Email { get; set; }
 
         [MinLength(1, ErrorMessage = "At Least one skill is required")]
-        public required List<string> TechStack { get; set; }
+        public required string TechStack { get; set; }
 
 
         [AllowedValues("Active", "Inactive", "Completed","active","inactive","completed")]

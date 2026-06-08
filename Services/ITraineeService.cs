@@ -7,16 +7,18 @@ namespace trainee_management.Services
 
     public interface ItraineeService
     {
-        List<TraineeResponse> returnTrainees();
-        Trainee getTraineeById(int id);
+        Task<List<TraineeResponse>> returnTrainees(string searchTerm);
+        Task<Trainee> getTraineeById(int id);
         
-        TraineeResponse createTrainee(CreateTraineeRequest request);
-        Trainee getTraineeByEmail(string email);
+        Task<bool> createTrainee(CreateTraineeRequest request);
+        Task<Trainee> getTraineeByEmail(string email);
 
         TraineeResponse getTraineeResponse(Trainee trainee);
 
-        TraineeResponse updateTrainee(UpdateTraineeRequest request,Trainee trainee);
+        Task<bool> updateTrainee(UpdateTraineeRequest request,Trainee trainee);
 
-        TraineeResponse deleteTrainee(Trainee trainee);
+        Task<bool> deleteTrainee(Trainee trainee);
+
+      
     }
 }
