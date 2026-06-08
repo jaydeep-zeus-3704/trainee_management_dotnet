@@ -37,112 +37,213 @@
 4. The API will now be running on `http://localhost:5136`   
 
 ## Usage
-#### Once the application is running you can access th eSwagger UI in your browser to test the endpoints
+#### Once the application is running you can access the Swagger UI in your browser to test the endpoints
 
 - Swagger UI : `http://localhost:5136/swagger/index.html`
 
 
 
  
-## Features
-- **CRUD Operations**: Full support for creating, reading, updating, and deleting trainees.
-- **Search**: Search for trainees by their first name, last name, email, or technology stack.
-- **Health Check**: An endpoint to monitor the API's status.
-- **API Documentation**: Integrated Swagger UI for easy API exploration and testing.
-- **Validation**: Server-side validation for trainee data.
+
  
 
-## API Endpoints
+## Sample Response
 The base URL for all endpoints is `http://localhost:5136`.
  
-### Health Controller
-- **`GET /api/Health`**
-    - **Description**: Checks the health and status of the application.
-    - **Success Response (200 OK)**:
-      ```json
-      {
-        "status": "running",
-        "application": "trainee_management_api",
-        "timestamp": "2023-10-27T10:00:00.000Z"
-      }
-      ```
+## Health Controller
+##  **`GET` `/api/Health`** :
+### Example Request ( Curl )
+####
+ ```bash
+curl -X 'GET' \
+'http://localhost:5136/api/Health' \
+-H 'accept: */*'
+```
+
+### Example Response
+####
+ ```json
+{
+"status": "running",
+"application": "trainee_management_api",
+"timestamp": "2026-06-08T11:17:41.986949Z"
+}
+```
  
-### Trainee Controller
+
+## Trainee Controller
+##  **`GET` `/api/Trainee`** :
+### Example Request ( Curl )
+####
+ ```bash
+ curl -X 'GET' \
+ 'http://localhost:5136/api/Trainee' \
+ -H 'accept: */*'
+```
+
  
-- **POST /api/Trainee**
-    - **Description**: Creates a new trainee.
-    - **Request Body**:
-      ```json
-      {
-        "firstName": "Jane",
-        "lastName": "Doe",
-        "email": "jane.doe@example.com",
-        "techStack": "Angular, Node.js",
-        "status": "Active"
-      }
-      ```
-    - **Success Response (201 Created)**:
-      ```json
-      {
-        "message": "Trainee Added to Database"
-      }
-      ```
+### Example Response
+####
+ ```json
+{
+  "traineesList": [
+    {
+      "id": 1,
+      "firstName": "Jaydeep",
+      "lastName": "Patil",
+      "email": "jaydeeppatil3704@gmail.com",
+      "techStack": "Reactjs,Redux,Dotnet,Csharp",
+      "status": "active",
+      "createdDate": "2026-06-08T00:00:00+05:30"
+    },
+    {
+      "id": 2,
+      "firstName": "Pratham",
+      "lastName": "Patil",
+      "email": "pratham@gmail.com",
+      "techStack": "Reactjs",
+      "status": "active",
+      "createdDate": "2026-06-08T00:00:00+05:30"
+    }
+  ],
+  "message": "Trainee List Fetched Sucessfully!"
+}
+````
+
+
  
-- **`GET /api/Trainee`**
-    - **Description**: Retrieves a list of all trainees. Supports filtering via a search term.
-    - **Query Parameters**:
-        - `searchTerm` (string): Filters trainees where the term matches first name, last name, email, or tech stack.
-    - **Success Response (200 OK)**:
-      ```json
-      {
-        "traineesList": [
-          {
-            "id": 1,
-            "firstName": "John",
-            "lastName": "Doe",
-            "email": "john.doe@example.com",
-            "techStack": ".NET, React",
-            "status": "Active",
-            "createdDate": "2023-10-27T00:00:00"
-          }
-        ],
-        "message": "Trainee List Fetched Sucessfully!"
-      }
-      ```
+##  **`GET` `/api/Trainee?={searchTerm}`** :
+### Example Request ( Curl )
+####
+ ```bash
+curl -X 'GET' \
+  'http://localhost:5136/api/Trainee?searchTerm=react' \
+  -H 'accept: */*'
+```
+
  
-- **`GET /api/Trainee/{id}`**
-    - **Description**: Retrieves details for a specific trainee by their ID.
-    - **Success Response (200 OK)**:
-      ```json
-      {
-        "trainee": {
-          "id": 1,
-          "firstName": "John",
-          "lastName": "Doe",
-          "email": "john.doe@example.com",
-          "techStack": ".NET, React",
-          "status": "Active",
-          "createdDate": "2023-10-27T00:00:00"
-        },
-        "message": "Trainee with id 1 returned sucessfully"
-      }
-      ```
+### Example Response
+####
+ ```json
+{
+  "traineesList": [
+    {
+      "id": 1,
+      "firstName": "Jaydeep",
+      "lastName": "Patil",
+      "email": "jaydeeppatil3704@gmail.com",
+      "techStack": "Reactjs,Redux,Dotnet,Csharp",
+      "status": "active",
+      "createdDate": "2026-06-08T00:00:00+05:30"
+    },
+    {
+      "id": 2,
+      "firstName": "Pratham",
+      "lastName": "Patil",
+      "email": "pratham@gmail.com",
+      "techStack": "Reactjs",
+      "status": "active",
+      "createdDate": "2026-06-08T00:00:00+05:30"
+    }
+  ],
+  "message": "Trainee List Fetched Sucessfully!"
+}
+````
+
+##  **`GET` `/api/Trainee/{id}`** :
+### Example Request ( Curl )
+####
+ ```bash
+  curl -X 'GET' \
+  'http://localhost:5136/api/Trainee/1' \
+  -H 'accept: */*'
+```
+
  
-- **`PUT /api/Trainee/{id}`**
-    - **Description**: Updates the details of an existing trainee.
-    - **Request Body**:
-      ```json
-      {
-        "firstName": "John",
-        "lastName": "Smith",
-        "email": "john.smith@example.com",
-        "techStack": "Vue, Python",
-        "status": "Completed"
-      }
-      ```
-    - **Success Response (200 OK)**:
-      ```json
-      {
-        "message": "Trainee Updated Sucessfully"
-      }
+### Example Response
+####
+ ```json
+{
+  "trainee": {
+    "id": 1,
+    "firstName": "Rakesh",
+    "lastName": "Sharma",
+    "email": "rakesh@gmail.com",
+    "techStack": "Nextjs, Angular",
+    "status": "active",
+    "createdDate": "2026-06-08T00:00:00+05:30"
+  },
+  "message": "Trainee with id 1 returned sucessfully"
+}
+````
+
+##  **`POST` `/api/Trainee`** :
+### Example Request ( Curl )
+####
+ ```bash
+curl -X 'POST' \
+  'http://localhost:5136/api/Trainee' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "firstName": "Rakesh",
+  "lastName": "Sharma",
+  "email": "rakesh@gmail.com",
+  "techStack": "Nextjs, Angular",
+  "status": "active"
+}'
+```
+
  
+### Example Response
+####
+ ```json
+{
+  "message": "Trainee Added to Database"
+}
+````
+
+##  **`PUT` `/api/Trainee/{id}`** :
+### Example Request ( Curl )
+####
+ ```bash
+curl -X 'PUT' \
+  'http://localhost:5136/api/Trainee/1' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "firstName": "Raj",
+  "lastName": "Mhatre",
+  "email": "rajmhatre@gmail.com",
+  "techStack": "Python, Flask, Django",
+  "status": "active"
+}'
+```
+
+ 
+### Example Response
+####
+ ```json
+{
+  "message": "Trainee Updated Sucessfully"
+}
+````
+
+
+##  **`DELETE` `/api/Trainee/{id}`** :
+### Example Request ( Curl )
+####
+ ```bash
+curl -X 'DELETE' \
+  'http://localhost:5136/api/Trainee/1' \
+  -H 'accept: */*'
+```
+
+ 
+### Example Response
+####
+ ```json
+{
+  "message": "Trainee Updated Sucessfully"
+}
+````
