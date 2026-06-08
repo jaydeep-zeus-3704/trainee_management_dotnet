@@ -25,7 +25,7 @@ public class TraineeController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateTraineeRequest request)
     {   //model validation
-   
+        ArgumentNullException.ThrowIfNull(request); 
         Trainee trainee=await _traineeService.getTraineeByEmail(request.Email);
         if (trainee != null)
         {
@@ -60,6 +60,7 @@ public class TraineeController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request); 
         Trainee trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
@@ -77,13 +78,14 @@ public class TraineeController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTrainee(int id)
     {
+        
         Trainee trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(404,new {error="Trainee not found try another id"});
         }
 
-        _traineeService.deleteTrainee(trainee);
+        await _traineeService.deleteTrainee(trainee);
      
         return StatusCode(204,new {message="Trainee Deleted Sucessfully"});         
         
