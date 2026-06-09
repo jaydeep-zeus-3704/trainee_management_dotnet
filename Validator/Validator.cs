@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using trainee_management.Models.Entities;
 
 namespace trainee_management.Validator
@@ -24,35 +25,22 @@ namespace trainee_management.Validator
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_trainee.Email))
-            {
-                return false;
-            }
-
             if (IsValidEmail(_trainee.Email))
             {
                 return false;
             }
             return true;
-
         }
             
-         private bool IsValidEmail(string email)
-        {
-            try
-            {
-                var addr=new System.Net.Mail.MailAddress(email);
-                return addr.Address==email;
-            }
-            catch 
-            {
-                
+        public static bool IsValidEmail(string email)
+	    {
+		    string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            if (string.IsNullOrEmpty(email))
                 return false;
-            }
-        }   
             
-        }
-
-         
-    }
+            Regex regex = new Regex(emailPattern);
+            return regex.IsMatch(email);
+	    }       
+    }    
+}
 

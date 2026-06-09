@@ -8,7 +8,6 @@ namespace trainee_management.Services
     public class TraineeService : ItraineeService
     {
         private readonly AppDBContext _context;
-
         public TraineeService(AppDBContext context)
         {
             _context = context;
@@ -58,12 +57,8 @@ namespace trainee_management.Services
             }
             return true;
         }
-
-
         public async Task<bool> createTrainee(CreateTraineeRequest request)
         {
-
-
             if (request.Email == null)
             {
                 Console.WriteLine("Email not provided by the user");
@@ -71,13 +66,11 @@ namespace trainee_management.Services
             }
             try
             {
-
                 Trainee trainee = new Trainee
                 {
-                    Id = _context.Trainee.Count() + 1,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
-                    Email = request.Email.Trim(),
+                    Email = request.Email.Trim().ToLower(),
                     Status = request.Status,
                     CreatedDate = DateTime.Today,
                     UpdatedDate = DateTime.Today,
@@ -89,13 +82,11 @@ namespace trainee_management.Services
                 {
                     return false;
                 }
-
-                // traineeList.Add(trainee);
                 await _context.Trainee.AddAsync(trainee);
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (System.Exception)
+            catch 
             {
                 return false;
             }
@@ -103,8 +94,6 @@ namespace trainee_management.Services
 
         public TraineeResponse getTraineeResponse(Trainee trainee)
         {
-
-
             TraineeResponse response = new TraineeResponse
             {
                 Id = trainee.Id,
@@ -118,10 +107,8 @@ namespace trainee_management.Services
             return response;
         }
 
-
         public async Task<bool> updateTrainee(UpdateTraineeRequest request, Trainee trainee)
         {
-          
                 trainee.FirstName = request.FirstName;
                 trainee.LastName = request.LastName;
                 trainee.Email = request.Email;
@@ -129,11 +116,8 @@ namespace trainee_management.Services
                 trainee.Status = request.Status;
                 trainee.UpdatedDate = DateTime.Today;
                 await _context.SaveChangesAsync();
-
-
             return true;
         }
-
 
         public async Task<bool> deleteTrainee(Trainee trainee)
         {
@@ -141,11 +125,5 @@ namespace trainee_management.Services
             await _context.SaveChangesAsync();
             return true;
         }
-
-
-
-
-
-
     }
 }
