@@ -51,7 +51,7 @@ public class TraineeController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTraineeDetails(int id)
     {
-        Trainee trainee=await _traineeService.getTraineeById(id);
+        Trainee? trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(400,new {error="Trainee not found with this id"});
@@ -67,7 +67,7 @@ public class TraineeController : ControllerBase
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
         ArgumentNullException.ThrowIfNull(request); 
-        Trainee trainee=await _traineeService.getTraineeById(id);
+        Trainee? trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(404,new {error="Trainee not found"});
@@ -85,7 +85,7 @@ public class TraineeController : ControllerBase
     public async Task<IActionResult> DeleteTrainee(int id)
     {
         
-        Trainee trainee=await _traineeService.getTraineeById(id);
+        Trainee? trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
             return StatusCode(404,new {error="Trainee not found try another id"});

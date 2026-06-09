@@ -11,7 +11,16 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ItraineeService,TraineeService>();
 
-builder.Services.AddDbContext<AppDBContext>(options =>options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("Database")));
+string? connectionString=builder.Configuration.GetConnectionString("Database");
+
+if (!string.IsNullOrEmpty(connectionString))
+{
+ builder.Services.AddDbContext<AppDBContext>(options =>options.UseInMemoryDatabase(connectionString));
+}
+else
+{
+    builder.Services.AddDbContext<AppDBContext>(options =>options.UseInMemoryDatabase("Trainee"));
+}
 
 var app = builder.Build();
 

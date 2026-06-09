@@ -11,20 +11,20 @@ public class Trainee
     [Required(ErrorMessage ="FirstName is required")]
     [MinLength(2,ErrorMessage ="First name should contain minimum 2 characters")]
     [MaxLength(50,ErrorMessage ="First name should contain maximum 50 characters")]
-    public required string FirstName {get;set;}
+    public required string FirstName {get;set;}=string.Empty;
 
     [Required(ErrorMessage ="LastName is required")]
     [MinLength(2,ErrorMessage ="Last name should contain minimum 2 characters")]
     [MaxLength(50,ErrorMessage ="Last name should contain maximum 50 characters")]
-    public required string LastName{get;set;} 
+    public required string LastName{get;set;}=string.Empty;
 
     [Required(ErrorMessage ="Email is required")]
     [EmailAddress]
-    public string? Email{get;set;}
+    public string Email{get;set;}=string.Empty;
     
     [Required(ErrorMessage ="At least one skill is required")]
     [MinLength(1,ErrorMessage ="At Least one skill is required")]
-    public required string TechStack{get;set;}
+    public required string TechStack{get;set;}=string.Empty;
 
     [AllowedValues("Active", "Inactive", "Completed","active","inactive","completed")]
     [Required(ErrorMessage ="Status is required ")]

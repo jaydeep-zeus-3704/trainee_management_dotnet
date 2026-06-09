@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
-
+using trainee_management.Validator;
 namespace trainee_management.Services
 {
 
@@ -62,6 +62,8 @@ namespace trainee_management.Services
 
         public async Task<bool> createTrainee(CreateTraineeRequest request)
         {
+
+
             if (request.Email == null)
             {
                 Console.WriteLine("Email not provided by the user");
@@ -82,6 +84,11 @@ namespace trainee_management.Services
                     TechStack = request.TechStack,
 
                 };
+                TraineeValidator validator=new TraineeValidator(trainee);
+                if (!validator.Validate())
+                {
+                    return false;
+                }
 
                 // traineeList.Add(trainee);
                 await _context.Trainee.AddAsync(trainee);
@@ -96,6 +103,8 @@ namespace trainee_management.Services
 
         public TraineeResponse getTraineeResponse(Trainee trainee)
         {
+
+
             TraineeResponse response = new TraineeResponse
             {
                 Id = trainee.Id,
