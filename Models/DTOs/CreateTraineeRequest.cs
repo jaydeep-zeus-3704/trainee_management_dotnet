@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using trainee_management.Enums;
 
 namespace trainee_management.Models.DTOs
 {
+
+    
     public class CreateTraineeRequest
     {
         [MinLength(2, ErrorMessage = "First name should contain minimum 2 characters")]
@@ -20,13 +23,12 @@ namespace trainee_management.Models.DTOs
         [EmailAddress]
         public required string? Email { get; set; }
 
-        [MinLength(1, ErrorMessage = "At Least one skill is required")]
+        [Required(ErrorMessage = "Techstack is required")]
         public required string TechStack { get; set; }
 
 
-        [AllowedValues("Active", "Inactive", "Completed","active","inactive","completed")]
         [Required(ErrorMessage = "Status is required ")]
-        public required String Status { get; set; }
+        public required StatusValues Status { get; set; }
 
     }
 }

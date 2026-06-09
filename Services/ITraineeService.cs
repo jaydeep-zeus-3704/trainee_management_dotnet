@@ -10,8 +10,8 @@ namespace trainee_management.Services
         Task<List<TraineeResponse>> returnTrainees(string searchTerm);
         Task<Trainee?> getTraineeById(int id);
         
-        Task<bool> createTrainee(CreateTraineeRequest request);
-        Task<bool> traineeAlreadyExists(string email);
+        Task createTrainee(CreateTraineeRequest request);
+        Task checkIfTraineeExists(string email);
 
         TraineeResponse getTraineeResponse(Trainee trainee);
 

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
 using trainee_management.Validator;
+using trainee_management.Exceptions;
+using trainee_management.Database;
 namespace trainee_management.Services
 {
 
@@ -48,24 +50,21 @@ namespace trainee_management.Services
             return traineesList;
         }
 
-        public async Task<bool> traineeAlreadyExists(string email)
+        public async Task checkIfTraineeExists(string email)
         {
             Trainee? trainee = await _context.Trainee.FirstOrDefaultAsync(t => t.Email == email);
-            if (trainee == null)
+            if (trainee != null)
             {
-                return false;
+                throw new DuplicateEmailException("User with this email already exists");
             }
-            return true;
         }
-        public async Task<bool> createTrainee(CreateTraineeRequest request)
+        public async Task createTrainee(CreateTraineeRequest request)
         {
             if (request.Email == null)
             {
                 Console.WriteLine("Email not provided by the user");
-                return false;
             }
-            try
-            {
+            
                 Trainee trainee = new Trainee
                 {
                     FirstName = request.FirstName,
@@ -77,19 +76,14 @@ namespace trainee_management.Services
                     TechStack = request.TechStack,
 
                 };
+
                 TraineeValidator validator=new TraineeValidator(trainee);
                 if (!validator.Validate())
                 {
-                    return false;
+                    throw new ValidationException("Invalid Input");
                 }
                 await _context.Trainee.AddAsync(trainee);
                 await _context.SaveChangesAsync();
-                return true;
-            }
-            catch 
-            {
-                return false;
-            }
         }
 
         public TraineeResponse getTraineeResponse(Trainee trainee)
@@ -109,21 +103,37 @@ namespace trainee_management.Services
 
         public async Task<bool> updateTrainee(UpdateTraineeRequest request, Trainee trainee)
         {
-                trainee.FirstName = request.FirstName;
-                trainee.LastName = request.LastName;
-                trainee.Email = request.Email;
-                trainee.TechStack = request.TechStack;
-                trainee.Status = request.Status;
-                trainee.UpdatedDate = DateTime.Today;
-                await _context.SaveChangesAsync();
-            return true;
+                try
+                {
+                 
+                    trainee.FirstName = request.FirstName;
+                    trainee.LastName = request.LastName;
+                    trainee.Email = request.Email;
+                    trainee.TechStack = request.TechStack;
+                    trainee.Status = request.Status;
+                    trainee.UpdatedDate = DateTime.Today;
+                    await _context.SaveChangesAsync();
+                    return true;   
+                }
+                catch 
+                {
+                    return false;
+                }
+            
         }
 
         public async Task<bool> deleteTrainee(Trainee trainee)
         {
-            _context.Remove(trainee);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Remove(trainee);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

@@ -1,11 +1,14 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using trainee_management.Middlewares;
 using trainee_management.Services;
+using trainee_management.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -13,14 +16,17 @@ builder.Services.AddScoped<ItraineeService,TraineeService>();
 
 string? connectionString=builder.Configuration.GetConnectionString("Database");
 
-if (!string.IsNullOrEmpty(connectionString))
-{
- builder.Services.AddDbContext<AppDBContext>(options =>options.UseInMemoryDatabase(connectionString));
-}
-else
-{
-    builder.Services.AddDbContext<AppDBContext>(options =>options.UseInMemoryDatabase("Trainee"));
-}
+
+
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+
+ builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString)));
+
 
 var app = builder.Build();
 
@@ -37,6 +43,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 

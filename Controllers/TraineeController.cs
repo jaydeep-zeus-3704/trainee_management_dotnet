@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using trainee_management.Exceptions;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
 using trainee_management.Services;
@@ -25,19 +26,11 @@ public class TraineeController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateTraineeRequest request)
-    {   //model validation
+    {   
         if(request.Email==null) return StatusCode(400,new {error="Email not provided"});
-        bool traineeAlreadyExists=await _traineeService.traineeAlreadyExists(request.Email);
-        if (traineeAlreadyExists)
-        {
-            return StatusCode(400, new { error = "A Trainee with this email already exists" });
-        }
-        bool traineeCreated=await _traineeService.createTrainee(request);
-        if (traineeCreated)
-        {
-            return StatusCode(201, new {  message = "Trainee Added to Database" });
-        }
-        return StatusCode(400,new {error="Something went wrong"});
+        await _traineeService.checkIfTraineeExists(request.Email);
+        await _traineeService.createTrainee(request);
+        return StatusCode(201, new {  message = "Trainee Added to Database" });
     }
 
 
@@ -49,9 +42,8 @@ public class TraineeController : ControllerBase
         Trainee? trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
-            return StatusCode(400,new {error="Trainee not found with this id"});
+            throw new NotFoundException("Trainee Not found");
         }
-
         TraineeResponse response=_traineeService.getTraineeResponse(trainee);
         return StatusCode(200,new {trainee=response,message=$"Trainee with id {id} returned sucessfully"});
     }
@@ -61,14 +53,13 @@ public class TraineeController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request); 
         Trainee? trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
-            return StatusCode(404,new {error="Trainee not found"});
+            throw new NotFoundException("Trainee Not found");
         }
-        bool traineUpdated=await _traineeService.updateTrainee(request,trainee);
-        if (traineUpdated)
+        bool traineeUpdated=await _traineeService.updateTrainee(request,trainee);
+        if (traineeUpdated)
         {
             return StatusCode(200,new {message="Trainee Updated Sucessfully"});
         }
@@ -79,18 +70,13 @@ public class TraineeController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTrainee(int id)
     {
-        
         Trainee? trainee=await _traineeService.getTraineeById(id);
         if (trainee == null)
         {
-            return StatusCode(404,new {error="Trainee not found try another id"});
+            throw new NotFoundException("Trainee Not found");
         }
-
         await _traineeService.deleteTrainee(trainee);
-     
-        return StatusCode(204,new {message="Trainee Deleted Sucessfully"});         
-        
-        
+        return StatusCode(204);    
     }
 
     

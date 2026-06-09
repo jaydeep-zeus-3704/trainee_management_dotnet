@@ -17,30 +17,47 @@ namespace trainee_management.Validator
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_trainee.FirstName))
+            if (!validateName(_trainee.FirstName))
             {
                 return false;
             }
-            if (string.IsNullOrWhiteSpace(_trainee.LastName))
+            if (!validateName(_trainee.LastName))
             {
                 return false;
             }
-            if (IsValidEmail(_trainee.Email))
+            if (!IsValidEmail(_trainee.Email))
+            {
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(_trainee.TechStack))
             {
                 return false;
             }
             return true;
         }
+
+
             
         public static bool IsValidEmail(string email)
 	    {
 		    string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrWhiteSpace(email))
                 return false;
             
             Regex regex = new Regex(emailPattern);
             return regex.IsMatch(email);
 	    }       
+
+        public static bool validateName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+            string pattern = @"^[\p{L}][\p{L}'\- ]{0,49}$";
+            Regex regex=new Regex(pattern);
+            return regex.IsMatch(name);
+        }
     }    
 }
 

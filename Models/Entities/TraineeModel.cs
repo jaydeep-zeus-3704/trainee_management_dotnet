@@ -1,14 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-
+using trainee_management.Enums;
 namespace trainee_management.Models.Entities;
 
 
-enum StatusValues
-{
-    ACTIVE,
-    INACTIVE,
-    COMPLETED
-};
 
 
 
@@ -33,9 +27,9 @@ public class Trainee
     [Required(ErrorMessage ="Techstack is required")]
     public required string TechStack{get;set;}
 
-    [AllowedValues("Active", "Inactive", "Completed","active","inactive","completed")]
+    
     [Required(ErrorMessage ="Status is required ")]
-    public required string Status{get;set;}
+    public required StatusValues Status{get;set;}
     public DateTime CreatedDate {get;set;}=DateTime.UtcNow;
     public DateTime UpdatedDate {get;set;}
 }
