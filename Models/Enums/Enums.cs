@@ -6,5 +6,12 @@ namespace trainee_management.Enums
         INACTIVE,
         COMPLETED
     }
+
+    public enum UserRole
+    {
+        ADMIN,
+        MENTOR,
+        TRAINEE,
+    }
     
 }

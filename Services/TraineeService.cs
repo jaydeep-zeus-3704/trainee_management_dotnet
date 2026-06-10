@@ -62,7 +62,7 @@ namespace trainee_management.Services
         {
             if (request.Email == null)
             {
-                Console.WriteLine("Email not provided by the user");
+                throw new ValidationException("Email not provided");
             }
             
                 Trainee trainee = new Trainee

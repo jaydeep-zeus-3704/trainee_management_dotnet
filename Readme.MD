@@ -247,5 +247,4 @@ Status code 204
 ````
 
 ## Limitations
-- EF Core In Memory Database is used . Data is lost when the server restarts 
 - No authentication - Anyone can read and write data to the database using the api

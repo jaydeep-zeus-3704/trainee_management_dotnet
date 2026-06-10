@@ -16,3 +16,8 @@ public class DuplicateEmailException : Exception
     public DuplicateEmailException(string message):base(message){}
 }
 
+
+public class InvalidCredentialsException:Exception
+{
+    public InvalidCredentialsException(string message):base(message){}
+}

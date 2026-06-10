@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using trainee_management.Middlewares;
 using trainee_management.Services;
 using trainee_management.Database;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +16,30 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ItraineeService,TraineeService>();
+builder.Services.AddScoped<IUserService,UserService>();
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    new TokenValidationParameters
+    {
+        ValidateIssuer=true,
+        ValidateAudience=true,
+        ValidateLifetime=true,
+        ValidateIssuerSigningKey=true,
+        ValidIssuer=builder.Configuration["Jwt:Issuer"],
+        ValidAudience=builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey=new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:Key"]!
+            )
+        ),
+        
+    };
+});    
+
 
 string? connectionString=builder.Configuration.GetConnectionString("Database");
-
 
 
 
@@ -39,6 +63,8 @@ if (app.Environment.IsDevelopment())
         options.DocumentPath = "/openapi/v1.json";
     });
 }
+
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

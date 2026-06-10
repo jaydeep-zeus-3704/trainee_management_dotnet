@@ -17,7 +17,7 @@ public class TraineeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] string? searchTerm)
+    public async Task<IActionResult> GetAll([FromQuery] string searchTerm)
     {
         if(searchTerm==null) searchTerm=string.Empty;
         List<TraineeResponse> trainees=await _traineeService.returnTrainees(searchTerm);

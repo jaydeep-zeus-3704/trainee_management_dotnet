@@ -39,6 +39,10 @@ namespace trainee_management.Middlewares
                 case DuplicateEmailException:
                     context.Response.StatusCode=StatusCodes.Status409Conflict;
                     break;
+
+                case InvalidCredentialsException:
+                    context.Response.StatusCode=StatusCodes.Status401Unauthorized;
+                    break;  
             }
             await context.Response.WriteAsJsonAsync(new
             {
