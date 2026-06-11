@@ -6,6 +6,7 @@ using trainee_management.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,34 +14,37 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<ItraineeService,TraineeService>();
-builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<ItraineeService, TraineeService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
-    new TokenValidationParameters
+    options.TokenValidationParameters=new TokenValidationParameters
     {
-        ValidateIssuer=true,
-        ValidateAudience=true,
-        ValidateLifetime=true,
-        ValidateIssuerSigningKey=true,
-        ValidIssuer=builder.Configuration["Jwt:Issuer"],
-        ValidAudience=builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey=new SymmetricSecurityKey(
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
                 builder.Configuration["Jwt:Key"]!
             )
         ),
-        
+
     };
-});    
+});
 
 
-string? connectionString=builder.Configuration.GetConnectionString("Database");
 
+
+
+
+builder.Services.AddAuthorization();
+string? connectionString = builder.Configuration.GetConnectionString("Database");
 
 
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -48,20 +52,52 @@ builder.Services.AddControllers().AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddSwaggerGen(options=>{
+    options.SwaggerDoc("v1",new OpenApiInfo
+    {
+        Title="trainee_management_api",
+        Version="v1"
+    });
 
- builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString)));
-
+    options.AddSecurityDefinition("Bearer",new OpenApiSecurityScheme
+    {
+       Name="Authorization" ,
+       Type=SecuritySchemeType.Http,
+       Scheme="Bearer",
+       BearerFormat="JWT",
+       In=ParameterLocation.Header,
+       Description="Enter your jwt token here"
+    });
+    
+     options.AddSecurityRequirement(new OpenApiSecurityRequirement
+     {
+         {
+             new OpenApiSecurityScheme
+             {
+                 Reference=new OpenApiReference
+                 {
+                     Type=ReferenceType.SecurityScheme,
+                     Id="Bearer"
+                 }
+             },
+             Array.Empty<string>()
+         }
+     });
+  
+   });
 
 var app = builder.Build();
+
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-     app.UseSwaggerUi(options =>
-    {
-        options.DocumentPath = "/openapi/v1.json";
-    });
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseAuthentication();

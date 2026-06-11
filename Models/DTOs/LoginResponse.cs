@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using trainee_management.Enums;
-using YamlDotNet.Core.Tokens;
 namespace trainee_management.Models.DTOs;
 
 

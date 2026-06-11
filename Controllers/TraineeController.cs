@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using trainee_management.Exceptions;
 using trainee_management.Models.DTOs;
@@ -16,6 +17,8 @@ public class TraineeController : ControllerBase
         _traineeService=traineeService;
     }
 
+
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] string searchTerm)
     {
@@ -24,6 +27,7 @@ public class TraineeController : ControllerBase
         return StatusCode(200, new { traineesList=trainees, message = "Trainee List Fetched Sucessfully!" });
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(CreateTraineeRequest request)
     {   
@@ -35,7 +39,7 @@ public class TraineeController : ControllerBase
 
 
     //get trainee details 
-
+    [Authorize]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTraineeDetails(int id)
     {
@@ -50,6 +54,7 @@ public class TraineeController : ControllerBase
 
 
     //update trainee
+    [Authorize]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
@@ -67,6 +72,8 @@ public class TraineeController : ControllerBase
         
     }
 
+    //delete trainee
+    [Authorize]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTrainee(int id)
     {
