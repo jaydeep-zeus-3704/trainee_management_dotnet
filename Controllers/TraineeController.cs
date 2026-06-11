@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using trainee_management.Exceptions;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
@@ -20,10 +21,10 @@ public class TraineeController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] string searchTerm)
+    public async Task<IActionResult> GetAll([FromQuery] string? searchTerm,int pageNumber=1,int pageSize=10)
     {
         if(searchTerm==null) searchTerm=string.Empty;
-        List<TraineeResponse> trainees=await _traineeService.returnTrainees(searchTerm);
+        List<TraineeResponse> trainees=await _traineeService.returnTrainees(searchTerm,pageNumber,pageSize);
         return StatusCode(200, new { traineesList=trainees, message = "Trainee List Fetched Sucessfully!" });
     }
 

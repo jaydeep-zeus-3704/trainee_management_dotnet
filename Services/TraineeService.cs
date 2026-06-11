@@ -22,9 +22,12 @@ namespace trainee_management.Services
         }
 
 
-        public async Task<List<TraineeResponse>> returnTrainees(string searchParams)
+        public async Task<List<TraineeResponse>> returnTrainees(string searchParams, int pageNumber, int pageSize)
         {
-            List<TraineeResponse> traineesList = await _context.Trainee.Select(t => new TraineeResponse
+           IQueryable<Trainee> trainees=_context.Trainee;
+            trainees=filterBySearch(searchParams,trainees);
+            trainees=getPaginatedData(pageNumber,pageSize,trainees);
+            List<TraineeResponse> traineesList = await trainees.Select(t => new TraineeResponse
             {
                 Id = t.Id,
                 FirstName = t.FirstName,
@@ -34,21 +37,35 @@ namespace trainee_management.Services
                 CreatedDate = t.CreatedDate,
                 Status = t.Status
             }).ToListAsync();
-
-            if (!string.IsNullOrWhiteSpace(searchParams))
-            {
-                List<TraineeResponse> filteredTrainees =traineesList.Where(
-                   t =>
-                    t.FirstName.ToLower().Contains(searchParams.ToLower()) ||
-                    t.LastName.ToLower().Contains(searchParams.ToLower()) ||
-                    t.Email.ToLower().Contains(searchParams.ToLower()) ||
-                    t.TechStack.ToLower().Contains(searchParams.ToLower())
-                ).ToList();
-
-                return filteredTrainees;
-            }
             return traineesList;
         }
+
+      
+
+
+        // filter By Search takes the paginated Data and filters by search params provided
+        public IQueryable<Trainee> filterBySearch(string searchParams,IQueryable<Trainee> trainees)
+        {
+            if (!string.IsNullOrWhiteSpace(searchParams))
+            {
+                searchParams=searchParams.Trim().ToLower();
+                trainees=trainees.Where(t=>
+                    t.FirstName.ToLower().Contains(searchParams)||
+                    t.LastName.ToLower().Contains(searchParams)||
+                    t.Email.ToLower().Contains(searchParams)
+                );
+            }
+            return trainees; 
+        }
+
+        //pagination
+        public IQueryable<Trainee> getPaginatedData(int pageNumber,int pageSize,IQueryable<Trainee> trainees)
+        {
+            trainees=trainees.Skip((pageNumber-1)*pageSize).Take(pageSize);
+            return trainees;
+        }
+
+     
 
         public async Task checkIfTraineeExists(string email)
         {
@@ -64,26 +81,26 @@ namespace trainee_management.Services
             {
                 throw new ValidationException("Email not provided");
             }
-            
-                Trainee trainee = new Trainee
-                {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Email = request.Email.Trim().ToLower(),
-                    Status = request.Status,
-                    CreatedDate = DateTime.Today,
-                    UpdatedDate = DateTime.Today,
-                    TechStack = request.TechStack,
 
-                };
+            Trainee trainee = new Trainee
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email.Trim().ToLower(),
+                Status = request.Status,
+                CreatedDate = DateTime.Today,
+                UpdatedDate = DateTime.Today,
+                TechStack = request.TechStack,
 
-                TraineeValidator validator=new TraineeValidator(trainee);
-                if (!validator.Validate())
-                {
-                    throw new ValidationException("Invalid Input");
-                }
-                await _context.Trainee.AddAsync(trainee);
-                await _context.SaveChangesAsync();
+            };
+
+            TraineeValidator validator = new TraineeValidator(trainee);
+            if (!validator.Validate())
+            {
+                throw new ValidationException("Invalid Input");
+            }
+            await _context.Trainee.AddAsync(trainee);
+            await _context.SaveChangesAsync();
         }
 
         public TraineeResponse getTraineeResponse(Trainee trainee)
@@ -103,23 +120,23 @@ namespace trainee_management.Services
 
         public async Task<bool> updateTrainee(UpdateTraineeRequest request, Trainee trainee)
         {
-                try
-                {
-                 
-                    trainee.FirstName = request.FirstName;
-                    trainee.LastName = request.LastName;
-                    trainee.Email = request.Email;
-                    trainee.TechStack = request.TechStack;
-                    trainee.Status = request.Status;
-                    trainee.UpdatedDate = DateTime.Today;
-                    await _context.SaveChangesAsync();
-                    return true;   
-                }
-                catch 
-                {
-                    return false;
-                }
-            
+            try
+            {
+
+                trainee.FirstName = request.FirstName;
+                trainee.LastName = request.LastName;
+                trainee.Email = request.Email;
+                trainee.TechStack = request.TechStack;
+                trainee.Status = request.Status;
+                trainee.UpdatedDate = DateTime.Today;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
         }
 
         public async Task<bool> deleteTrainee(Trainee trainee)
