@@ -7,7 +7,6 @@ public class UserResponse
 {
     public int Id {get;set;}
     public  required  string  Username{get;set;}
-    
     public required UserRole role {get;set;}
 }
 

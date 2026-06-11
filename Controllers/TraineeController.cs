@@ -1,7 +1,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using trainee_management.Exceptions;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
@@ -13,19 +12,25 @@ namespace trainee_management.Controllers;
 public class TraineeController : ControllerBase
 {
     private readonly ItraineeService _traineeService;
-    public TraineeController(ItraineeService traineeService)
+    private readonly ILogger<TraineeController> _logger;
+    public TraineeController(ItraineeService traineeService,ILogger<TraineeController> logger)
     {
         _traineeService=traineeService;
+        _logger=logger;
     }
 
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] string? searchTerm,int pageNumber=1,int pageSize=10)
+    public async Task<IActionResult> GetAll([FromQuery] string? searchTerm,string? status,int pageNumber=1,int pageSize=10)
     {
         if(searchTerm==null) searchTerm=string.Empty;
-        List<TraineeResponse> trainees=await _traineeService.returnTrainees(searchTerm,pageNumber,pageSize);
-        return StatusCode(200, new { traineesList=trainees, message = "Trainee List Fetched Sucessfully!" });
+        if(status==null) status=string.Empty;
+        if(pageNumber<1){pageNumber=1;}
+        if(pageSize<1){pageSize=5;}
+        GetAllTrainees response=await _traineeService.returnTrainees(searchTerm,status,pageNumber,pageSize);
+        _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee List Fetched Sucessfully");
+        return StatusCode(200, new { response, message = "Trainee List Fetched Sucessfully!" });
     }
 
     [Authorize]
@@ -35,6 +40,7 @@ public class TraineeController : ControllerBase
         if(request.Email==null) return StatusCode(400,new {error="Email not provided"});
         await _traineeService.checkIfTraineeExists(request.Email);
         await _traineeService.createTrainee(request);
+        _logger.LogInformation($"\nStatus Code:201\nmessage: Trainee Added to database");
         return StatusCode(201, new {  message = "Trainee Added to Database" });
     }
 
@@ -45,11 +51,13 @@ public class TraineeController : ControllerBase
     public async Task<IActionResult> GetTraineeDetails(int id)
     {
         Trainee? trainee=await _traineeService.getTraineeById(id);
+        
         if (trainee == null)
         {
             throw new NotFoundException("Trainee Not found");
         }
         TraineeResponse response=_traineeService.getTraineeResponse(trainee);
+        _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee returned sucessfully\npath: get - api/Trainee/{id}");
         return StatusCode(200,new {trainee=response,message=$"Trainee with id {id} returned sucessfully"});
     }
 
@@ -67,10 +75,10 @@ public class TraineeController : ControllerBase
         bool traineeUpdated=await _traineeService.updateTrainee(request,trainee);
         if (traineeUpdated)
         {
+            _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee updated sucessfully\npath: put - api/Trainee/{id}");
             return StatusCode(200,new {message="Trainee Updated Sucessfully"});
         }
-        return StatusCode(400, new {error=$"Failed to update trainee with id ${id}"});
-        
+        throw new UpdateFailedException("Failed to update trainee");
     }
 
     //delete trainee
@@ -84,6 +92,7 @@ public class TraineeController : ControllerBase
             throw new NotFoundException("Trainee Not found");
         }
         await _traineeService.deleteTrainee(trainee);
+        _logger.LogInformation($"\nStatus Code:204\nmessage: Trainee deleted sucessfully\npath: delete - api/Trainee/{id}");
         return StatusCode(204);    
     }
 

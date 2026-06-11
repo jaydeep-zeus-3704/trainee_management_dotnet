@@ -7,7 +7,7 @@ namespace trainee_management.Services
 
     public interface ItraineeService
     {
-        Task<List<TraineeResponse>> returnTrainees(string searchTerm,int pageNumber,int pageSize);
+        Task<GetAllTrainees> returnTrainees(string searchTerm,string status,int pageNumber,int pageSize);
         Task<Trainee?> getTraineeById(int id);
         
         Task createTrainee(CreateTraineeRequest request);

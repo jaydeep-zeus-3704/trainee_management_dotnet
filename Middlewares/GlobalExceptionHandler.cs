@@ -5,9 +5,11 @@ namespace trainee_management.Middlewares
     {
 
         private readonly RequestDelegate _next;
-        public GlobalExceptionHandlingMiddleware(RequestDelegate next)
+        private readonly ILogger _logger;
+        public GlobalExceptionHandlingMiddleware(RequestDelegate next,ILogger<GlobalExceptionHandlingMiddleware> logger)
         {
             _next=next;
+            _logger=logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -19,6 +21,7 @@ namespace trainee_management.Middlewares
             catch (Exception ex)
             {
                 await HandleException(context,ex);
+                
             }
             
         }
@@ -42,8 +45,15 @@ namespace trainee_management.Middlewares
 
                 case InvalidCredentialsException:
                     context.Response.StatusCode=StatusCodes.Status401Unauthorized;
-                    break;  
+                    break;
+
+                case UpdateFailedException:
+                    context.Response.StatusCode=StatusCodes.Status400BadRequest;
+                    break;
+
+                 
             }
+            _logger.LogError($"\nException occured at ${context.Request.Path}\nMessage : {ex.Message}\nStatusCode:{context.Response.StatusCode}");
             await context.Response.WriteAsJsonAsync(new
             {
                message=ex.Message,

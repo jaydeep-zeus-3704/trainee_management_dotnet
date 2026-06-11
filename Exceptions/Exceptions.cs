@@ -21,3 +21,9 @@ public class InvalidCredentialsException:Exception
 {
     public InvalidCredentialsException(string message):base(message){}
 }
+
+
+public class UpdateFailedException : Exception
+{
+    public UpdateFailedException(string message):base(message){}
+}

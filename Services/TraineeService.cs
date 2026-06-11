@@ -4,6 +4,7 @@ using trainee_management.Models.Entities;
 using trainee_management.Validator;
 using trainee_management.Exceptions;
 using trainee_management.Database;
+using trainee_management.Enums;
 namespace trainee_management.Services
 {
 
@@ -22,10 +23,10 @@ namespace trainee_management.Services
         }
 
 
-        public async Task<List<TraineeResponse>> returnTrainees(string searchParams, int pageNumber, int pageSize)
+        public async Task<GetAllTrainees> returnTrainees(string searchParams,string status ,int pageNumber, int pageSize)
         {
            IQueryable<Trainee> trainees=_context.Trainee;
-            trainees=filterBySearch(searchParams,trainees);
+            trainees=await filterBySearch(searchParams,status,trainees);
             trainees=getPaginatedData(pageNumber,pageSize,trainees);
             List<TraineeResponse> traineesList = await trainees.Select(t => new TraineeResponse
             {
@@ -37,14 +38,22 @@ namespace trainee_management.Services
                 CreatedDate = t.CreatedDate,
                 Status = t.Status
             }).ToListAsync();
-            return traineesList;
+
+            GetAllTrainees response=new GetAllTrainees
+            {
+                pageNumber=pageNumber,
+                pageSize=pageSize,
+                totalCount=traineesList.Count,
+                data=traineesList
+            };
+            return response;
         }
 
       
 
 
         // filter By Search takes the paginated Data and filters by search params provided
-        public IQueryable<Trainee> filterBySearch(string searchParams,IQueryable<Trainee> trainees)
+        public async Task<IQueryable<Trainee>> filterBySearch(string searchParams,string status,IQueryable<Trainee> trainees)
         {
             if (!string.IsNullOrWhiteSpace(searchParams))
             {
@@ -52,8 +61,14 @@ namespace trainee_management.Services
                 trainees=trainees.Where(t=>
                     t.FirstName.ToLower().Contains(searchParams)||
                     t.LastName.ToLower().Contains(searchParams)||
-                    t.Email.ToLower().Contains(searchParams)
+                    t.Email.ToLower().Contains(searchParams)||
+                    t.TechStack.ToLower().Contains(searchParams)
                 );
+            }
+
+            if (!string.IsNullOrWhiteSpace(status) &&  Enum.TryParse<StatusValues>(status,true,out var result))
+            {
+                trainees=trainees.Where(t=>t.Status==result);
             }
             return trainees; 
         }
