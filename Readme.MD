@@ -30,11 +30,17 @@
     ```sh
    cd trainee_management_dotnet
    ```
-3. Run the application
+4. Configure the MySQL connection string in appsettings.json
+  ```sh
+    "ConnectionStrings": {
+     "Database":"server=localhost;port=3306;database=trainee_management;User=<enter_your_username>;Password=<enter_your_password>;"
+  }
+  ```
+4. Run the application
     ```sh
    dotnet watch run
    ```
-4. The API will now be running on `http://localhost:5136`   
+5. The API will now be running on `http://localhost:5136`   
 
 ## Usage
 #### Once the application is running you can access the Swagger UI in your browser to test the endpoints

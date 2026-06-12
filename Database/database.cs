@@ -7,4 +7,5 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 {
     public DbSet< Trainee > Trainee {get;set;}
     public DbSet<User> User {get;set;}
+    public DbSet<Mentor> Mentor {get;set;}
 }

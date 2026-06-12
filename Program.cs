@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ItraineeService, TraineeService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddScoped<IMentorService,MentorService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

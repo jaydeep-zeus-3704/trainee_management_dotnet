@@ -28,7 +28,7 @@ public class TraineeController : ControllerBase
         if(status==null) status=string.Empty;
         if(pageNumber<1){pageNumber=1;}
         if(pageSize<1){pageSize=5;}
-        GetAllTrainees response=await _traineeService.returnTrainees(searchTerm,status,pageNumber,pageSize);
+        GetAllDTO<TraineeResponse> response=await _traineeService.returnTrainees(searchTerm,status,pageNumber,pageSize);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee List Fetched Sucessfully");
         return StatusCode(200, new { response, message = "Trainee List Fetched Sucessfully!" });
     }
@@ -51,7 +51,6 @@ public class TraineeController : ControllerBase
     public async Task<IActionResult> GetTraineeDetails(int id)
     {
         Trainee? trainee=await _traineeService.getTraineeById(id);
-        
         if (trainee == null)
         {
             throw new NotFoundException("Trainee Not found");

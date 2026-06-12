@@ -23,7 +23,7 @@ namespace trainee_management.Services
         }
 
 
-        public async Task<GetAllTrainees> returnTrainees(string searchParams,string status ,int pageNumber, int pageSize)
+        public async Task<GetAllDTO<TraineeResponse>> returnTrainees(string searchParams,string status ,int pageNumber, int pageSize)
         {
            IQueryable<Trainee> trainees=_context.Trainee;
             trainees=await filterBySearch(searchParams,status,trainees);
@@ -39,7 +39,7 @@ namespace trainee_management.Services
                 Status = t.Status
             }).ToListAsync();
 
-            GetAllTrainees response=new GetAllTrainees
+            GetAllDTO<TraineeResponse> response=new GetAllDTO<TraineeResponse>
             {
                 pageNumber=pageNumber,
                 pageSize=pageSize,

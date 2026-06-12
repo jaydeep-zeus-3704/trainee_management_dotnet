@@ -13,5 +13,11 @@ namespace trainee_management.Enums
         MENTOR,
         TRAINEE,
     }
+
+    public enum MentorStatus
+    {
+        ACTIVE,
+        INACTIVE
+    }
     
 }
