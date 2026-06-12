@@ -19,5 +19,12 @@ namespace trainee_management.Enums
         ACTIVE,
         INACTIVE
     }
+
+    public enum LearningTaskStatus
+    {
+        DRAFT,
+        PUBLISHED,
+        CLOSED
+    }
     
 }
