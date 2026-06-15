@@ -15,4 +15,6 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
     public DbSet<TaskAssignment> TaskAssignment {get;set;}
     public DbSet<Submission> Submission{get;set;}
 
+    public DbSet<Review> Review {get;set;}
+
 }

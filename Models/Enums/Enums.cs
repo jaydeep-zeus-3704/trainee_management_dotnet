@@ -42,4 +42,11 @@ namespace trainee_management.Enums
         SUBMITTED,
         RESUBMITTED
     }
+
+    public enum ReviewStatus
+    {
+        ACCEPTED,
+        CHANGES_REQUIRED,
+        REJECTED
+    }
 }

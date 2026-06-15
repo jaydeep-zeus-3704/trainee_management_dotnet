@@ -24,7 +24,6 @@ public class TaskAssignment
     
     public  int LearningTaskId{get;set;}
 
-
     public  LearningTask? LearningTask {get;set;}
 
     
@@ -35,8 +34,6 @@ public class TaskAssignment
 
     [ForeignKey("Id")]
     [Required(ErrorMessage ="Mentor Id is required")]
-
-
     public  int MentorId{get;set;}
 
     [Required(ErrorMessage ="Due Date is required")]
