@@ -8,7 +8,7 @@ using trainee_management.Services;
 namespace trainee_management.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/trainee")]
 public class TraineeController : ControllerBase
 {
     private readonly ItraineeService _traineeService;
@@ -50,11 +50,8 @@ public class TraineeController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTraineeDetails(int id)
     {
-        Trainee? trainee=await _traineeService.getTraineeById(id);
-        if (trainee == null)
-        {
-            throw new NotFoundException("Trainee Not found");
-        }
+        Trainee trainee=await _traineeService.getTraineeById(id)
+         ??  throw new NotFoundException("Trainee Not found");
         TraineeResponse response=_traineeService.getTraineeResponse(trainee);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee returned sucessfully\npath: get - api/Trainee/{id}");
         return StatusCode(200,new {trainee=response,message=$"Trainee with id {id} returned sucessfully"});
@@ -66,18 +63,11 @@ public class TraineeController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
-        Trainee? trainee=await _traineeService.getTraineeById(id);
-        if (trainee == null)
-        {
-            throw new NotFoundException("Trainee Not found");
-        }
-        bool traineeUpdated=await _traineeService.updateTrainee(request,trainee);
-        if (traineeUpdated)
-        {
-            _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee updated sucessfully\npath: put - api/Trainee/{id}");
-            return StatusCode(200,new {message="Trainee Updated Sucessfully"});
-        }
-        throw new UpdateFailedException("Failed to update trainee");
+        Trainee trainee=await _traineeService.getTraineeById(id)
+        ?? throw new NotFoundException("Trainee Not found");
+        await _traineeService.updateTrainee(request,trainee);
+        _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee updated sucessfully\npath: put - api/Trainee/{id}");
+        return StatusCode(200,new {message="Trainee Updated Sucessfully"});
     }
 
     //delete trainee
@@ -85,11 +75,8 @@ public class TraineeController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTrainee(int id)
     {
-        Trainee? trainee=await _traineeService.getTraineeById(id);
-        if (trainee == null)
-        {
-            throw new NotFoundException("Trainee Not found");
-        }
+        Trainee? trainee=await _traineeService.getTraineeById(id)
+        ?? throw new NotFoundException("Trainee Not found");
         await _traineeService.deleteTrainee(trainee);
         _logger.LogInformation($"\nStatus Code:204\nmessage: Trainee deleted sucessfully\npath: delete - api/Trainee/{id}");
         return StatusCode(204);    

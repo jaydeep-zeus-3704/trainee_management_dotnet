@@ -21,7 +21,7 @@ namespace trainee_management.Models.DTOs
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
-        public required string? Email { get; set; }
+        public required string Email { get; set; }
 
         [Required(ErrorMessage = "Techstack is required")]
         public required string TechStack { get; set; }

@@ -84,21 +84,15 @@ public class MentorService : IMentorService
 
     public async Task<MentorResponse> getMentorById(int id)
     {
-        Mentor? mentor = await _context.Mentor.FindAsync(id);
-        if (mentor == null)
-        {
-            throw new NotFoundException("mentor Not found");
-        }
+        Mentor mentor = await _context.Mentor.FindAsync(id)
+        ?? throw new NotFoundException("mentor Not found");
         return new MentorResponse(mentor);
     }
 
     public async Task updateMentor(int id,MentorRequest request)
     {
-        Mentor? mentor = await _context.Mentor.FindAsync(id);
-        if (mentor == null)
-        {
-            throw new NotFoundException("mentor Not found");
-        }
+        Mentor mentor = await _context.Mentor.FindAsync(id)
+         ?? throw new NotFoundException("mentor Not found");
         mentor.FirstName=request.FirstName;
         mentor.LastName=request.LastName;
         mentor.Email=request.Email;
@@ -110,11 +104,8 @@ public class MentorService : IMentorService
 
     public async Task deleteMentor(int id)
     {
-        Mentor? mentor = await _context.Mentor.FindAsync(id);
-        if (mentor == null)
-        {
-            throw new NotFoundException("mentor Not found");
-        }
+        Mentor mentor = await _context.Mentor.FindAsync(id)
+        ?? throw new NotFoundException("mentor Not found");
          _context.Mentor.Remove(mentor);
          await _context.SaveChangesAsync();
     }

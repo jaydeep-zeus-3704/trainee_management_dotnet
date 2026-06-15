@@ -15,7 +15,7 @@ namespace trainee_management.Services
 
         TraineeResponse getTraineeResponse(Trainee trainee);
 
-        Task<bool> updateTrainee(UpdateTraineeRequest request,Trainee trainee);
+        Task updateTrainee(UpdateTraineeRequest request,Trainee trainee);
 
         Task<bool> deleteTrainee(Trainee trainee);
 

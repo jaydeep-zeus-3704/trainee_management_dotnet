@@ -18,7 +18,8 @@ namespace trainee_management.Services
 
         public async Task<Trainee?> getTraineeById(int id)
         {
-            Trainee? trainee = await _context.Trainee.FindAsync(id);
+            Trainee trainee = await _context.Trainee.FindAsync(id) 
+            ?? throw new NotFoundException("Trainee Not found");
             return trainee;
         }
 
@@ -66,7 +67,7 @@ namespace trainee_management.Services
                 );
             }
 
-            if (!string.IsNullOrWhiteSpace(status) &&  Enum.TryParse<StatusValues>(status,true,out var result))
+            if (!string.IsNullOrWhiteSpace(status) &&  Enum.TryParse(status,true,out StatusValues result))
             {
                 trainees=trainees.Where(t=>t.Status==result);
             }
@@ -84,19 +85,12 @@ namespace trainee_management.Services
 
         public async Task checkIfTraineeExists(string email)
         {
-            Trainee? trainee = await _context.Trainee.FirstOrDefaultAsync(t => t.Email == email);
-            if (trainee != null)
-            {
-                throw new DuplicateEmailException("User with this email already exists");
-            }
+            Trainee trainee = await _context.Trainee.FirstOrDefaultAsync(t => t.Email == email)
+            ??  throw new DuplicateEmailException("User with this email already exists");
         }
         public async Task createTrainee(CreateTraineeRequest request)
         {
-            if (request.Email == null)
-            {
-                throw new ValidationException("Email not provided");
-            }
-
+            ArgumentNullException.ThrowIfNull(request);
             Trainee trainee = new Trainee
             {
                 FirstName = request.FirstName,
@@ -133,11 +127,8 @@ namespace trainee_management.Services
             return response;
         }
 
-        public async Task<bool> updateTrainee(UpdateTraineeRequest request, Trainee trainee)
+        public async Task updateTrainee(UpdateTraineeRequest request, Trainee trainee)
         {
-            try
-            {
-
                 trainee.FirstName = request.FirstName;
                 trainee.LastName = request.LastName;
                 trainee.Email = request.Email;
@@ -145,13 +136,6 @@ namespace trainee_management.Services
                 trainee.Status = request.Status;
                 trainee.UpdatedDate = DateTime.Today;
                 await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-
         }
 
         public async Task<bool> deleteTrainee(Trainee trainee)

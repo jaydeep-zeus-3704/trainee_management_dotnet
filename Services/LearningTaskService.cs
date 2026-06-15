@@ -24,7 +24,7 @@ public class LearningTaskService:ILearningTaskService
 
     public async Task<LearningTaskResponse> getLearningTaskById(int id)
     {
-        LearningTask? task = await _context.LearningTask.FindAsync(id) 
+        LearningTask task = await _context.LearningTask.FindAsync(id)
         ?? throw new NotFoundException("task with this id doesn't exist");
         LearningTaskResponse response =new LearningTaskResponse(task);
         return response;
