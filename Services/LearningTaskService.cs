@@ -32,7 +32,7 @@ public class LearningTaskService:ILearningTaskService
 
     public async Task deleteLearningTask(int id)
     {
-        LearningTask? task = await _context.LearningTask.FindAsync(id) 
+        LearningTask task = await _context.LearningTask.FindAsync(id) 
         ?? throw new NotFoundException("task with this id doesn't exist");
         _context.LearningTask.Remove(task);
         await _context.SaveChangesAsync();
@@ -40,7 +40,7 @@ public class LearningTaskService:ILearningTaskService
 
     public async Task updateTask(int id,LearningTaskRequest request)
     {
-        LearningTask? task = await _context.LearningTask.FindAsync(id) 
+        LearningTask task = await _context.LearningTask.FindAsync(id) 
         ?? throw new NotFoundException("task with this id doesn't exist");
         task.Title=request.Title;
         task.Description=request.Description;

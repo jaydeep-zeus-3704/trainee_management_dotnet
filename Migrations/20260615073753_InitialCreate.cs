@@ -16,7 +16,7 @@ namespace trainee_management.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "learningTask",
+                name: "LearningTask",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -34,7 +34,7 @@ namespace trainee_management.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_learningTask", x => x.Id);
+                    table.PrimaryKey("PK_LearningTask", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -107,22 +107,77 @@ namespace trainee_management.Migrations
                     table.PrimaryKey("PK_User", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TaskAssignment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TraineeId = table.Column<int>(type: "int", nullable: false),
+                    LearningTaskId = table.Column<int>(type: "int", nullable: false),
+                    MentorId = table.Column<int>(type: "int", nullable: false),
+                    DueDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    AssignedDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAssignment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignment_LearningTask_LearningTaskId",
+                        column: x => x.LearningTaskId,
+                        principalTable: "LearningTask",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignment_Mentor_MentorId",
+                        column: x => x.MentorId,
+                        principalTable: "Mentor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignment_Trainee_TraineeId",
+                        column: x => x.TraineeId,
+                        principalTable: "Trainee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignment_LearningTaskId",
+                table: "TaskAssignment",
+                column: "LearningTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignment_MentorId",
+                table: "TaskAssignment",
+                column: "MentorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignment_TraineeId",
+                table: "TaskAssignment",
+                column: "TraineeId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "learningTask");
+                name: "TaskAssignment");
+
+            migrationBuilder.DropTable(
+                name: "User");
+
+            migrationBuilder.DropTable(
+                name: "LearningTask");
 
             migrationBuilder.DropTable(
                 name: "Mentor");
 
             migrationBuilder.DropTable(
                 name: "Trainee");
-
-            migrationBuilder.DropTable(
-                name: "User");
         }
     }
 }

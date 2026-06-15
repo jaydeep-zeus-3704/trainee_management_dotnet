@@ -63,6 +63,7 @@ public class TraineeController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
+        if(request==null) throw new ArgumentNullException("Invalid data is provided , null request .");
         Trainee trainee=await _traineeService.getTraineeById(id)
         ?? throw new NotFoundException("Trainee Not found");
         await _traineeService.updateTrainee(request,trainee);

@@ -26,5 +26,20 @@ namespace trainee_management.Enums
         PUBLISHED,
         CLOSED
     }
+
+    public enum TaskAssignmentStatus
+    {
+        ASSIGNED,
+        INPROGRESS,
+        SUBMITTED,
+        REVIEWED,
+        COMPLETED
+    }
     
+
+    public enum SubmittedStatus
+    {
+        SUBMITTED,
+        RESUBMITTED
+    }
 }

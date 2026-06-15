@@ -31,7 +31,7 @@ public class LearningTaskRequest
         DueDate=learningTask.DueDate;
     }
 
-    public LearningTaskRequest()
+    public  LearningTaskRequest()
     {
         
     }

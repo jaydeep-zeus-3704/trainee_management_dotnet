@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.SignalR;
+
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using trainee_management.Models;
 using trainee_management.Models.Entities;
+
 namespace trainee_management.Database;
 public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(options)
 {
@@ -11,4 +11,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
     public DbSet<Mentor> Mentor {get;set;}
 
     public DbSet<LearningTask> LearningTask {get;set;}
+
+    public DbSet<TaskAssignment> TaskAssignment {get;set;}
+    public DbSet<Submission> Submission{get;set;}
+
 }

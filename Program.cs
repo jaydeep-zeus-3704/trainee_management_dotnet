@@ -19,6 +19,7 @@ builder.Services.AddScoped<ItraineeService, TraineeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMentorService,MentorService>();
 builder.Services.AddScoped<ILearningTaskService,LearningTaskService>();
+builder.Services.AddScoped<ITaskAssignmentService,TaskAssignmentService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters=new TokenValidationParameters
