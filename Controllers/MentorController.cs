@@ -1,5 +1,6 @@
 namespace trainee_management.Controllers;
 
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using trainee_management.Models.DTOs;
@@ -24,8 +25,8 @@ public class MentorController : ControllerBase
     {
         if (searchTerm == null) searchTerm = string.Empty;
         if (status == null) status = string.Empty;
-        if (pageNumber < 1) { pageNumber = 1; }
-        if (pageSize < 1) { pageSize = 5; }
+        if(pageNumber<1) throw new ValidationException("Invalid page number");
+        if(pageSize<1)  throw new ValidationException("Invalid page size");
         GetAllDTO<MentorResponse> response = await _mentor_service.getMentors(searchTerm, status, pageNumber, pageSize);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Mentor List Fetched Sucessfully");
         return StatusCode(200, new { response, message = "Mentor List Fetched Sucessfully!" });

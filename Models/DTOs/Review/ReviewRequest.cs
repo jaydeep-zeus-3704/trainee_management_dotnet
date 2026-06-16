@@ -9,7 +9,6 @@ public class ReviewRequest
 
     [Required(ErrorMessage ="Submission  id is required")]
     public int SubmissionId {get;set;}
-    public  Submission? Submission{get;set;}
     
     [Required(ErrorMessage ="Mentor  id is required")]
     public int MentorId {get;set;}

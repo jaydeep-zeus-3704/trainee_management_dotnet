@@ -26,8 +26,8 @@ public class TraineeController : ControllerBase
     {
         if(searchTerm==null) searchTerm=string.Empty;
         if(status==null) status=string.Empty;
-        if(pageNumber<1){pageNumber=1;}
-        if(pageSize<1){pageSize=5;}
+        if(pageNumber<1) throw new ValidationException("Invalid page number");
+        if(pageSize<1)  throw new ValidationException("Invalid page size");
         GetAllDTO<TraineeResponse> response=await _traineeService.returnTrainees(searchTerm,status,pageNumber,pageSize);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee List Fetched Sucessfully");
         return StatusCode(200, new { response, message = "Trainee List Fetched Sucessfully!" });
