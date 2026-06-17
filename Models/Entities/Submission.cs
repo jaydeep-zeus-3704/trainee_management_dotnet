@@ -28,13 +28,13 @@ public class Submission
     [Required(ErrorMessage ="Status is required")]
     public SubmittedStatus Status{get;set;}
 
-    public Submission(SubmissionRequest r)
+    public Submission(SubmissionRequest request)
     {
-        TaskAssignmentId=r.TaskAssignmentId;
-        SubmissionUrl=r.SubmissionUrl;
-        Notes=r.Notes;
-        SubmittedDate=r.SubmittedDate;
-        Status=r.Status;
+        TaskAssignmentId=request.TaskAssignmentId;
+        SubmissionUrl=request.SubmissionUrl;
+        Notes=request.Notes;
+        SubmittedDate=request.SubmittedDate;
+        Status=request.Status;
     }
 
     public Submission()

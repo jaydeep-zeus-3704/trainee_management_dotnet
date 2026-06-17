@@ -39,7 +39,7 @@ public class LearningTaskController : ControllerBase
 
     //delete learning task
     [Authorize]
-    [HttpDelete("delete")]
+    [HttpDelete("{id:int}/delete")]
     public async Task<IActionResult> deleteLearningTask(int id)
     {
         await _learning_task_service.deleteLearningTask(id);
@@ -49,7 +49,7 @@ public class LearningTaskController : ControllerBase
 
     //update learning task
     [Authorize]
-    [HttpPut("update/{id:int}")]
+    [HttpPut("{id:int}/update")]
     public async Task<IActionResult> updateLearningTask(int id, LearningTaskRequest request)
     {
          await _learning_task_service.updateTask(id,request);

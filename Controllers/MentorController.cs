@@ -50,7 +50,7 @@ public class MentorController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:int}/update")]
     public async Task<IActionResult> updateMentor(int id, MentorRequest request)
     {
         await _mentor_service.updateMentor(id, request);
@@ -60,7 +60,7 @@ public class MentorController : ControllerBase
 
 
     [Authorize]
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:int}/delete")]
     public async Task<IActionResult> deleteMentor(int id)
     {
         await _mentor_service.deleteMentor(id);

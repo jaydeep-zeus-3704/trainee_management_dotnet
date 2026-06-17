@@ -34,7 +34,7 @@ public class TraineeController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<IActionResult> Create(CreateTraineeRequest request)
     {   
         if(request.Email==null) return StatusCode(400,new {error="Email not provided"});
@@ -60,7 +60,7 @@ public class TraineeController : ControllerBase
 
     //update trainee
     [Authorize]
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:int}/update")]
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
         if(request==null) throw new ArgumentNullException("Invalid data is provided , null request .");
@@ -73,7 +73,7 @@ public class TraineeController : ControllerBase
 
     //delete trainee
     [Authorize]
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:int}/delete")]
     public async Task<IActionResult> DeleteTrainee(int id)
     {
         Trainee? trainee=await _traineeService.getTraineeById(id)

@@ -85,8 +85,8 @@ namespace trainee_management.Services
 
         public async Task checkIfTraineeExists(string email)
         {
-            Trainee trainee = await _context.Trainee.FirstOrDefaultAsync(t => t.Email == email)
-            ??  throw new DuplicateEmailException("User with this email already exists");
+            bool exists = await _context.Trainee.AnyAsync(t => t.Email == email);
+            if (exists)throw new DuplicateEmailException("User with this email already exists");
         }
         public async Task createTrainee(CreateTraineeRequest request)
         {

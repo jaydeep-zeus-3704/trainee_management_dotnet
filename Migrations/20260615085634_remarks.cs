@@ -5,7 +5,7 @@
 namespace trainee_management.Migrations
 {
     /// <inheritdoc />
-    public partial class remarks : Migration
+    public partial class Remarks : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

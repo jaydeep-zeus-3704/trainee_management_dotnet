@@ -17,7 +17,7 @@ public class SubmissionController : ControllerBase
 
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<IActionResult> CreateSubmission(SubmissionRequest request)
     {
         await _submission_service.CreateSubmission(request);

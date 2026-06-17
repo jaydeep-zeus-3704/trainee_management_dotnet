@@ -13,7 +13,7 @@ namespace trainee_management.Migrations
 {
     [DbContext(typeof(AppDBContext))]
     [Migration("20260615103045_submission")]
-    partial class submission
+    partial class Submission
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

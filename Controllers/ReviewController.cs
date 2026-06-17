@@ -15,7 +15,7 @@ public class ReviewController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<IActionResult> CreateReview(ReviewRequest request)
     {
         await _review_service.CreateReview(request);

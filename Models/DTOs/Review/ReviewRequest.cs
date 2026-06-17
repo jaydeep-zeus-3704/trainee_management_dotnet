@@ -4,7 +4,6 @@ using trainee_management.Enums;
 public class ReviewRequest
 {
     [Key]
-    public int Id {get;set;}
 
 
     [Required(ErrorMessage ="Submission  id is required")]

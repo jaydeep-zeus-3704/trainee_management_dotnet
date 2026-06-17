@@ -30,14 +30,14 @@ public class Review
 
     public int? Score;
 
-    public Review(ReviewRequest r)
+    public Review(ReviewRequest request)
     {
-        SubmissionId=r.SubmissionId;
-        MentorId=r.MentorId;
-        MentorFeedback=r.MentorFeedback;
-        ReviewedDate=r.ReviewedDate;
-        Status=r.Status;
-        Score=r.Score;
+        SubmissionId=request.SubmissionId;
+        MentorId=request.MentorId;
+        MentorFeedback=request.MentorFeedback;
+        ReviewedDate=request.ReviewedDate;
+        Status=request.Status;
+        Score=request.Score;
     }
 
     public Review()
