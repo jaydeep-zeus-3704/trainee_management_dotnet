@@ -15,14 +15,14 @@ public class LearningTaskService:ILearningTaskService
     }
 
 
-    public async  Task createLearningTask(LearningTaskRequest request)
+    public async  Task CreateLearningTask(LearningTaskRequest request)
     {
             LearningTask task=new LearningTask(request);
             await _context.LearningTask.AddAsync(task);
             await _context.SaveChangesAsync();
     }
 
-    public async Task<LearningTaskResponse> getLearningTaskById(int id)
+    public async Task<LearningTaskResponse> GetLearningTaskById(int id)
     {
         LearningTask task = await _context.LearningTask.FindAsync(id)
         ?? throw new NotFoundException("task with this id doesn't exist");
@@ -30,7 +30,7 @@ public class LearningTaskService:ILearningTaskService
         return response;
     }
 
-    public async Task deleteLearningTask(int id)
+    public async Task DeleteLearningTask(int id)
     {
         LearningTask task = await _context.LearningTask.FindAsync(id) 
         ?? throw new NotFoundException("task with this id doesn't exist");
@@ -38,7 +38,7 @@ public class LearningTaskService:ILearningTaskService
         await _context.SaveChangesAsync();
     }
 
-    public async Task updateTask(int id,LearningTaskRequest request)
+    public async Task UpdateTask(int id,LearningTaskRequest request)
     {
         LearningTask task = await _context.LearningTask.FindAsync(id) 
         ?? throw new NotFoundException("task with this id doesn't exist");
@@ -50,11 +50,11 @@ public class LearningTaskService:ILearningTaskService
         await _context.SaveChangesAsync();
     }
     
-     public async Task<GetAllDTO<LearningTaskResponse>> getLearningTasks(string searchParams, string status, int pageNumber, int pageSize)
+     public async Task<GetAllDTO<LearningTaskResponse>> GetLearningTasks(string searchParams, string status, int pageNumber, int pageSize)
     {
         IQueryable<LearningTask> learningTasks = _context.LearningTask;
-        learningTasks = await filterBySearch(searchParams, status, learningTasks);
-        learningTasks = getPaginatedData(pageNumber, pageSize, learningTasks);
+        learningTasks = await FilterBySearch(searchParams, status, learningTasks);
+        learningTasks = GetPaginatedData(pageNumber, pageSize, learningTasks);
         List<LearningTaskResponse> learningTaskList = await learningTasks.Select(m => new LearningTaskResponse(m)).ToListAsync();
         GetAllDTO<LearningTaskResponse> response = new GetAllDTO<LearningTaskResponse>
         {
@@ -67,7 +67,7 @@ public class LearningTaskService:ILearningTaskService
     }
 
 
-    public async Task<IQueryable<LearningTask>> filterBySearch(string searchParams, string status, IQueryable<LearningTask> learningtasks)
+    public async Task<IQueryable<LearningTask>> FilterBySearch(string searchParams, string status, IQueryable<LearningTask> learningtasks)
     {
         if (!string.IsNullOrWhiteSpace(searchParams))
         {
@@ -87,7 +87,7 @@ public class LearningTaskService:ILearningTaskService
     }
 
     //pagination
-    public IQueryable<LearningTask> getPaginatedData(int pageNumber, int pageSize, IQueryable<LearningTask> learningTasks)
+    public IQueryable<LearningTask> GetPaginatedData(int pageNumber, int pageSize, IQueryable<LearningTask> learningTasks)
     {
         learningTasks = learningTasks.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         return learningTasks;

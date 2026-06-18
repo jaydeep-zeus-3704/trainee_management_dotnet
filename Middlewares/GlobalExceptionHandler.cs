@@ -16,6 +16,7 @@ namespace trainee_management.Middlewares
         {
             try
             {
+                
                 await _next(context);    
             }
             catch (Exception ex)
@@ -50,7 +51,7 @@ namespace trainee_management.Middlewares
                 case UpdateFailedException:
                     context.Response.StatusCode=StatusCodes.Status400BadRequest;
                     break;
-
+                
                  
             }
             _logger.LogError($"\nException occured at ${context.Request.Path}\nMessage : {ex.Message}\nStatusCode:{context.Response.StatusCode}");

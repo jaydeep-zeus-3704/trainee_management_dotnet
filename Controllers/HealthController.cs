@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace trainee_management.Controllers;
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/health")]
     public class HealthController : ControllerBase
     {
         [HttpGet]

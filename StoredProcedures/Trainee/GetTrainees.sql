@@ -1,0 +1,20 @@
+DELIMITER $$
+CREATE PROCEDURE GetTrainees(
+ IN p_search VARCHAR(100),
+ IN p_status VARCHAR(20),
+ IN p_pageNo INT,
+ IN p_pageSize INT
+)
+BEGIN 
+DECLARE v_offset INT;
+SET v_offset=(p_pageNo-1)*p_pageSize;
+select * from trainee
+where p_search IS NULL 
+OR FirstName Like CONCAT('%',p_search ,'%')
+OR LastName Like CONCAT('%',p_search ,'%') 
+OR Email Like CONCAT('%',p_search ,'%')
+OR TechStack Like CONCAT('%',p_search ,'%')
+and (p_status is null OR status=p_status)
+limit v_offset,p_pageSize;
+END $$
+DELIMITER ;

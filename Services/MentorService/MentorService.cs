@@ -16,9 +16,9 @@ public class MentorService : IMentorService
         _context = context;
     }
 
-    public async Task createMentor(MentorRequest request)
+    public async Task CreateMentor(MentorRequest request)
     {
-        await mentorExistsByEmail(request.Email);
+        await MentorExistsByEmail(request.Email);
         Mentor mentor = new Mentor(request);
         MentorValidator validator = new MentorValidator(mentor);
         if (!validator.Validate())
@@ -29,7 +29,7 @@ public class MentorService : IMentorService
         await _context.SaveChangesAsync();
     }
 
-    public async Task mentorExistsByEmail(string email)
+    public async Task MentorExistsByEmail(string email)
     {
         Mentor? mentor = await _context.Mentor.FirstOrDefaultAsync(m => m.Email == email);
         if (mentor != null)
@@ -38,11 +38,11 @@ public class MentorService : IMentorService
         }
     }
 
-    public async Task<GetAllDTO<MentorResponse>> getMentors(string searchParams, string status, int pageNumber, int pageSize)
+    public async Task<GetAllDTO<MentorResponse>> GetMentors(string searchParams, string status, int pageNumber, int pageSize)
     {
         IQueryable<Mentor> mentors = _context.Mentor;
-        mentors = await filterBySearch(searchParams, status, mentors);
-        mentors = getPaginatedData(pageNumber, pageSize, mentors);
+        mentors = await FilterBySearch(searchParams, status, mentors);
+        mentors = GetPaginatedData(pageNumber, pageSize, mentors);
         List<MentorResponse> mentorList = await mentors.Select(m => new MentorResponse(m)).ToListAsync();
         GetAllDTO<MentorResponse> response = new GetAllDTO<MentorResponse>
         {
@@ -55,7 +55,7 @@ public class MentorService : IMentorService
     }
 
 
-    public async Task<IQueryable<Mentor>> filterBySearch(string searchParams, string status, IQueryable<Mentor> mentors)
+    public async Task<IQueryable<Mentor>> FilterBySearch(string searchParams, string status, IQueryable<Mentor> mentors)
     {
         if (!string.IsNullOrWhiteSpace(searchParams))
         {
@@ -76,20 +76,20 @@ public class MentorService : IMentorService
     }
 
     //pagination
-    public IQueryable<Mentor> getPaginatedData(int pageNumber, int pageSize, IQueryable<Mentor> mentors)
+    public IQueryable<Mentor> GetPaginatedData(int pageNumber, int pageSize, IQueryable<Mentor> mentors)
     {
         mentors = mentors.Skip((pageNumber - 1) * pageSize).Take(pageSize);
         return mentors;
     }
 
-    public async Task<MentorResponse> getMentorById(int id)
+    public async Task<MentorResponse> GetMentorById(int id)
     {
         Mentor mentor = await _context.Mentor.FindAsync(id)
         ?? throw new NotFoundException("mentor Not found");
         return new MentorResponse(mentor);
     }
 
-    public async Task updateMentor(int id,MentorRequest request)
+    public async Task UpdateMentor(int id,MentorRequest request)
     {
         Mentor mentor = await _context.Mentor.FindAsync(id)
          ?? throw new NotFoundException("mentor Not found");
@@ -102,7 +102,7 @@ public class MentorService : IMentorService
         await _context.SaveChangesAsync();
     }
 
-    public async Task deleteMentor(int id)
+    public async Task DeleteMentor(int id)
     {
         Mentor mentor = await _context.Mentor.FindAsync(id)
         ?? throw new NotFoundException("mentor Not found");

@@ -16,30 +16,26 @@ namespace trainee_management.Services
             _context = context;
         }
 
-        public async Task<Trainee?> getTraineeById(int id)
+        public async Task<Trainee?> GetTraineeById(int id)
         {
-            Trainee trainee = await _context.Trainee.FindAsync(id) 
+            Trainee trainee=await  _context.Trainee.FindAsync(id)
             ?? throw new NotFoundException("Trainee Not found");
             return trainee;
         }
 
 
-        public async Task<GetAllDTO<TraineeResponse>> returnTrainees(string searchParams,string status ,int pageNumber, int pageSize)
+        public async Task<GetAllDTO<TraineeResponse>> ReturnTrainees(string searchParams,string status ,int pageNumber, int pageSize)
         {
-           IQueryable<Trainee> trainees=_context.Trainee;
-            trainees=await filterBySearch(searchParams,status,trainees);
-            trainees=getPaginatedData(pageNumber,pageSize,trainees);
-            List<TraineeResponse> traineesList = await trainees.Select(t => new TraineeResponse
+            List<Trainee> trainees=[];
+            if(Enum.TryParse(status,true,out StatusValues result))
             {
-                Id = t.Id,
-                FirstName = t.FirstName,
-                LastName = t.LastName,
-                Email = t.Email,
-                TechStack = t.TechStack,
-                CreatedDate = t.CreatedDate,
-                Status = t.Status
-            }).ToListAsync();
-
+                trainees=_context.Trainee.FromSqlInterpolated($"CALL GetTrainees({searchParams},{(int)result},{pageNumber},{pageSize})").ToList();
+            }
+            else
+            {
+                throw new ValidationException("Invalid Status");
+            }
+            List<TraineeResponse> traineesList =  trainees.Select(trainee => new TraineeResponse(trainee)).ToList();
             GetAllDTO<TraineeResponse> response=new GetAllDTO<TraineeResponse>
             {
                 pageNumber=pageNumber,
@@ -50,84 +46,30 @@ namespace trainee_management.Services
             return response;
         }
 
-      
 
-
-        // filter By Search takes the paginated Data and filters by search params provided
-        public async Task<IQueryable<Trainee>> filterBySearch(string searchParams,string status,IQueryable<Trainee> trainees)
+        public async Task CheckIfTraineeExists(string email)
         {
-            if (!string.IsNullOrWhiteSpace(searchParams))
-            {
-                searchParams=searchParams.Trim().ToLower();
-                trainees=trainees.Where(t=>
-                    t.FirstName.ToLower().Contains(searchParams)||
-                    t.LastName.ToLower().Contains(searchParams)||
-                    t.Email.ToLower().Contains(searchParams)||
-                    t.TechStack.ToLower().Contains(searchParams)
-                );
-            }
-
-            if (!string.IsNullOrWhiteSpace(status) &&  Enum.TryParse(status,true,out StatusValues result))
-            {
-                trainees=trainees.Where(t=>t.Status==result);
-            }
-            return trainees; 
-        }
-
-        //pagination
-        public IQueryable<Trainee> getPaginatedData(int pageNumber,int pageSize,IQueryable<Trainee> trainees)
-        {
-            trainees=trainees.Skip((pageNumber-1)*pageSize).Take(pageSize);
-            return trainees;
-        }
-
-     
-
-        public async Task checkIfTraineeExists(string email)
-        {
-            bool exists = await _context.Trainee.AnyAsync(t => t.Email == email);
+            bool exists = await _context.Trainee.AnyAsync(trainee => trainee.Email == email);
             if (exists)throw new DuplicateEmailException("User with this email already exists");
         }
-        public async Task createTrainee(CreateTraineeRequest request)
+        
+        public async Task CreateTrainee(CreateTraineeRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
-            Trainee trainee = new Trainee
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email.Trim().ToLower(),
-                Status = request.Status,
-                CreatedDate = DateTime.Today,
-                UpdatedDate = DateTime.Today,
-                TechStack = request.TechStack,
-
-            };
-
+            Trainee trainee = new Trainee(request);
             TraineeValidator validator = new TraineeValidator(trainee);
-            if (!validator.Validate())
-            {
-                throw new ValidationException("Invalid Input");
-            }
+            if (!validator.Validate())throw new ValidationException("Invalid Input");
             await _context.Trainee.AddAsync(trainee);
             await _context.SaveChangesAsync();
         }
 
-        public TraineeResponse getTraineeResponse(Trainee trainee)
+        public TraineeResponse GetTraineeResponse(Trainee trainee)
         {
-            TraineeResponse response = new TraineeResponse
-            {
-                Id = trainee.Id,
-                FirstName = trainee.FirstName,
-                LastName = trainee.LastName,
-                Email = trainee.Email,
-                TechStack = trainee.TechStack,
-                CreatedDate = trainee.CreatedDate,
-                Status = trainee.Status
-            };
+            TraineeResponse response = new TraineeResponse(trainee);
             return response;
         }
 
-        public async Task updateTrainee(UpdateTraineeRequest request, Trainee trainee)
+        public async Task UpdateTrainee(UpdateTraineeRequest request, Trainee trainee)
         {
                 trainee.FirstName = request.FirstName;
                 trainee.LastName = request.LastName;
@@ -138,18 +80,10 @@ namespace trainee_management.Services
                 await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> deleteTrainee(Trainee trainee)
+        public async Task DeleteTrainee(Trainee trainee)
         {
-            try
-            {
                 _context.Remove(trainee);
                 await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }

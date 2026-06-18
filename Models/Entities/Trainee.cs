@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using trainee_management.Enums;
+using trainee_management.Models.DTOs;
 namespace trainee_management.Models.Entities;
 
 
@@ -13,23 +14,41 @@ public class Trainee
     [Required(ErrorMessage ="FirstName is required")]
     [MinLength(2,ErrorMessage ="First name should contain minimum 2 characters")]
     [MaxLength(50,ErrorMessage ="First name should contain maximum 50 characters")]
-    public required string FirstName {get;set;}
+    public  string FirstName {get;set;}=string.Empty;
 
     [Required(ErrorMessage ="LastName is required")]
     [MinLength(2,ErrorMessage ="Last name should contain minimum 2 characters")]
     [MaxLength(50,ErrorMessage ="Last name should contain maximum 50 characters")]
-    public required string LastName{get;set;}
+    public string LastName{get;set;}=string.Empty;
 
     [Required(ErrorMessage ="Email is required")]
     [EmailAddress]
-    public required string Email{get;set;}
+    public string Email{get;set;}=string.Empty;
     
     [Required(ErrorMessage ="Techstack is required")]
-    public required string TechStack{get;set;}
+    public  string TechStack{get;set;}=string.Empty;
 
     
     [Required(ErrorMessage ="Status is required ")]
-    public required StatusValues Status{get;set;}
-    public DateTime CreatedDate {get;set;}=DateTime.UtcNow;
+    public  StatusValues Status{get;set;}
+    public DateTime CreatedDate {get;set;}
     public DateTime UpdatedDate {get;set;}
+
+    public Trainee(CreateTraineeRequest request)
+    {
+        FirstName=request.FirstName;
+        LastName=request.LastName;
+        Email=request.Email;
+        TechStack=request.TechStack;
+        Status=request.Status;
+        CreatedDate=DateTime.Now;
+        UpdatedDate=DateTime.Now;
+    }
+
+    public Trainee()
+    {
+        
+    }
+
+
 }

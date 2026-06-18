@@ -22,7 +22,7 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public IActionResult LoginUser(UserLoginDTO request)
     {
-        LoginResponse res=_userservice.loginUser(request);
+        LoginResponse res=_userservice.LoginUser(request);
         
         return StatusCode(StatusCodes.Status200OK,res);
     }

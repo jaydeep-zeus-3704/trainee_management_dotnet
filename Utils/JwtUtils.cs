@@ -23,11 +23,13 @@ public class JwtUtils
         var credentials =
             new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+
+       
         var token = new JwtSecurityToken(
             issuer: configuration["Jwt:Issuer"],
             audience: configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.AddMinutes(int.Parse(configuration["Jwt:ExpiresIn"]!)),
             signingCredentials: credentials
         );
 
