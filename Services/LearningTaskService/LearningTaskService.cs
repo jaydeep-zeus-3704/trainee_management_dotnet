@@ -52,10 +52,16 @@ public class LearningTaskService:ILearningTaskService
     
      public async Task<GetAllDTO<LearningTaskResponse>> GetLearningTasks(string searchParams, string status, int pageNumber, int pageSize)
     {
-        IQueryable<LearningTask> learningTasks = _context.LearningTask;
-        learningTasks = await FilterBySearch(searchParams, status, learningTasks);
-        learningTasks = GetPaginatedData(pageNumber, pageSize, learningTasks);
-        List<LearningTaskResponse> learningTaskList = await learningTasks.Select(m => new LearningTaskResponse(m)).ToListAsync();
+            List<LearningTask> learningTasks=[];
+            if(Enum.TryParse(status,true,out LearningTaskStatus result))
+            {
+                learningTasks=_context.LearningTask.FromSqlInterpolated($"CALL GetLearningTasks({searchParams},{(int)result},{pageNumber},{pageSize})").ToList();
+            }
+            else
+            {
+                throw new ValidationException("Invalid Status");
+            }
+        List<LearningTaskResponse> learningTaskList =  learningTasks.Select(m => new LearningTaskResponse(m)).ToList();
         GetAllDTO<LearningTaskResponse> response = new GetAllDTO<LearningTaskResponse>
         {
             pageNumber = pageNumber,
@@ -65,35 +71,4 @@ public class LearningTaskService:ILearningTaskService
         };
         return response;
     }
-
-
-    public async Task<IQueryable<LearningTask>> FilterBySearch(string searchParams, string status, IQueryable<LearningTask> learningtasks)
-    {
-        if (!string.IsNullOrWhiteSpace(searchParams))
-        {
-            searchParams = searchParams.Trim().ToLower();
-            learningtasks = learningtasks.Where(t =>
-                t.Title.ToLower().Contains(searchParams) ||
-                t.Description.ToLower().Contains(searchParams) ||
-                t.ExpectedTechStack.ToLower().Contains(searchParams) 
-            );
-        }
-
-        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse(status, true, out LearningTaskStatus result))
-        {
-            learningtasks = learningtasks.Where(t => t.Status == result);
-        }
-        return learningtasks;
-    }
-
-    //pagination
-    public IQueryable<LearningTask> GetPaginatedData(int pageNumber, int pageSize, IQueryable<LearningTask> learningTasks)
-    {
-        learningTasks = learningTasks.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-        return learningTasks;
-    }
-
-
-
-
 }

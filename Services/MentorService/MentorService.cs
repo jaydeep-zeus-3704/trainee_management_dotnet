@@ -40,10 +40,16 @@ public class MentorService : IMentorService
 
     public async Task<GetAllDTO<MentorResponse>> GetMentors(string searchParams, string status, int pageNumber, int pageSize)
     {
-        IQueryable<Mentor> mentors = _context.Mentor;
-        mentors = await FilterBySearch(searchParams, status, mentors);
-        mentors = GetPaginatedData(pageNumber, pageSize, mentors);
-        List<MentorResponse> mentorList = await mentors.Select(m => new MentorResponse(m)).ToListAsync();
+        List<Mentor> mentors=[];
+            if(Enum.TryParse(status,true,out MentorStatus result))
+            {
+                mentors=_context.Mentor.FromSqlInterpolated($"CALL GetMentors({searchParams},{(int)result},{pageNumber},{pageSize})").ToList();
+            }
+            else
+            {
+                throw new ValidationException("Invalid Status");
+            }
+        List<MentorResponse> mentorList =  mentors.Select(m => new MentorResponse(m)).ToList();
         GetAllDTO<MentorResponse> response = new GetAllDTO<MentorResponse>
         {
             pageNumber = pageNumber,
@@ -52,34 +58,6 @@ public class MentorService : IMentorService
             data = mentorList
         };
         return response;
-    }
-
-
-    public async Task<IQueryable<Mentor>> FilterBySearch(string searchParams, string status, IQueryable<Mentor> mentors)
-    {
-        if (!string.IsNullOrWhiteSpace(searchParams))
-        {
-            searchParams = searchParams.Trim().ToLower();
-            mentors = mentors.Where(t =>
-                t.FirstName.ToLower().Contains(searchParams) ||
-                t.LastName.ToLower().Contains(searchParams) ||
-                t.Email.ToLower().Contains(searchParams) ||
-                t.Expertise.ToLower().Contains(searchParams)
-            );
-        }
-
-        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse(status, true, out MentorStatus result))
-        {
-            mentors = mentors.Where(t => t.Status == result);
-        }
-        return mentors;
-    }
-
-    //pagination
-    public IQueryable<Mentor> GetPaginatedData(int pageNumber, int pageSize, IQueryable<Mentor> mentors)
-    {
-        mentors = mentors.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-        return mentors;
     }
 
     public async Task<MentorResponse> GetMentorById(int id)
