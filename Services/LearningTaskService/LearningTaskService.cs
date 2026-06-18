@@ -79,7 +79,7 @@ public class LearningTaskService:ILearningTaskService
             );
         }
 
-        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<LearningTaskStatus>(status, true, out var result))
+        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse(status, true, out LearningTaskStatus result))
         {
             learningtasks = learningtasks.Where(t => t.Status == result);
         }

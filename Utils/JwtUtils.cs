@@ -8,24 +8,23 @@ public class JwtUtils
 {
     public static string GenerateToken(User user, IConfiguration configuration)
     {
-        var claims = new[]
-        {
+        Claim[] claims = 
+        [
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim("UserId",user.Id.ToString())
-        };
+            new Claim("UserId", user.Id.ToString())
+        ];
 
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)
+        SymmetricSecurityKey key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("Key")!)
         );
 
-        var credentials =
-            new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SigningCredentials credentials = new SigningCredentials(
+            key, SecurityAlgorithms.HmacSha256
+        );
 
-
-       
-        var token = new JwtSecurityToken(
+        JwtSecurityToken token = new JwtSecurityToken(
             issuer: configuration["Jwt:Issuer"],
             audience: configuration["Jwt:Audience"],
             claims: claims,
@@ -35,5 +34,4 @@ public class JwtUtils
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
 }

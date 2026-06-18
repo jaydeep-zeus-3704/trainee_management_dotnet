@@ -68,7 +68,7 @@ public class MentorService : IMentorService
             );
         }
 
-        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<MentorStatus>(status, true, out var result))
+        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse(status, true, out MentorStatus result))
         {
             mentors = mentors.Where(t => t.Status == result);
         }

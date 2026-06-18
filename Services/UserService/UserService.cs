@@ -49,7 +49,8 @@ public class UserService : IUserService
         {
             throw new InvalidCredentialsException("Invalid Credentials please try different password");
         }
-        
+        int expiresIn=int.Parse(_configuration["Jwt:ExpiresIn"]!);
+
         UserResponse userRes=new UserResponse
         {
           Id=user.Id,
@@ -60,7 +61,7 @@ public class UserService : IUserService
         LoginResponse res=new LoginResponse
         {
             token=JwtUtils.GenerateToken(user,_configuration),
-            expiresIn=_configuration["Jwt:ExpiresIn"]!,
+            expiresIn=(expiresIn*60).ToString(),
             user=userRes
         };
         return res;

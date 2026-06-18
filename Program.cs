@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration["Jwt:Key"]!
+                Environment.GetEnvironmentVariable("Key")!
             )
         ),
 
@@ -59,8 +62,8 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddAuthorization();
-string? connectionString = builder.Configuration.GetConnectionString("Database");
 
+string connectionString =Environment.GetEnvironmentVariable("ConnectionString")!;
 
 builder.Services.AddControllers().AddJsonOptions(options =>
     {

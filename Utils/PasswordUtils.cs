@@ -14,7 +14,7 @@ public class PasswordUtils
     public static bool verifyPassword(string username,string password,string hashedPassword)
     {
         PasswordHasher<string> hasher=new PasswordHasher<string>();
-        var result=hasher.VerifyHashedPassword(username,hashedPassword,password);
+        PasswordVerificationResult result=hasher.VerifyHashedPassword(username,hashedPassword,password);
         return result == PasswordVerificationResult.Success || result==PasswordVerificationResult.SuccessRehashNeeded;
     }
 
