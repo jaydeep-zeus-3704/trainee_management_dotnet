@@ -13,7 +13,8 @@ public class JwtUtils
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim("UserId", user.Id.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
         ];
 
         SymmetricSecurityKey key = new SymmetricSecurityKey(

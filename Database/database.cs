@@ -17,4 +17,6 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public DbSet<Review> Review {get;set;}
 
+    public DbSet<Metadata> Metadata {get;set;}
+
 }

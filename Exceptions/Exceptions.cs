@@ -28,3 +28,15 @@ public class UpdateFailedException : Exception
     public UpdateFailedException(string message):base(message){}
 }
 
+
+public class InvalidExtensionException : Exception
+{
+    public InvalidExtensionException(string message):base(message){}
+}
+
+
+public class FileSizeException : Exception
+{
+    public FileSizeException(string message):base(message){}
+}
+

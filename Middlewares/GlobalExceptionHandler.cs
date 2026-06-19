@@ -72,6 +72,12 @@ namespace trainee_management.Middlewares
                 case UpdateFailedException:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     break;
+                case InvalidExtensionException:
+                    context.Response.StatusCode=StatusCodes.Status415UnsupportedMediaType;
+                    break;
+                case FileSizeException:
+                    context.Response.StatusCode=StatusCodes.Status413PayloadTooLarge;
+                    break;
                 default:
                     context.Response.StatusCode=StatusCodes.Status500InternalServerError;
                     break;
