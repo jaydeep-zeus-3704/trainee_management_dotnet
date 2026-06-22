@@ -64,9 +64,7 @@ public class TraineeController : ControllerBase
     public async Task<IActionResult> UpdateTraineeDetails(int id,UpdateTraineeRequest request)
     {
         if(request==null) throw new ArgumentNullException("Invalid data is provided , null request .");
-        Trainee trainee=await _traineeService.GetTraineeById(id)
-        ?? throw new NotFoundException("Trainee Not found");
-        await _traineeService.UpdateTrainee(request,trainee);
+        await _traineeService.UpdateTrainee(request,id);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee updated sucessfully\npath: put - api/Trainee/{id}");
         return StatusCode(200,new {message="Trainee Updated Sucessfully"});
     }

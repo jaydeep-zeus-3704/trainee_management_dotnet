@@ -53,7 +53,7 @@ public class SubmissionController : ControllerBase
     [HttpPost("{submissionId:int}/files")]
       public async Task<IActionResult> UploadFile(IFormFile file,int submissionId)
     {   
-        Console.WriteLine("Code reachable in upload file in submission controller");
+
         int userId=int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         SubmissionFilesResponse response=await _file_storage_service.SaveAsync(file,userId,submissionId);
         return StatusCode(201,new {response,message="File Uploaded sucessfully"});

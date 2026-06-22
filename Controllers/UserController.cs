@@ -27,11 +27,11 @@ public class UserController : ControllerBase
         return StatusCode(StatusCodes.Status200OK,res);
     }
 
-    // [HttpPost("register")]
-    // public IActionResult RegisterUser(UserDTO request)
-    // {   
-    //     _userservice.createUser(request);
-    //     return StatusCode(StatusCodes.Status201Created,new {message="User Created"});
-    // }
+    [HttpPost("register")]
+    public IActionResult RegisterUser(UserDTO request)
+    {   
+        _userservice.CreateUser(request);
+        return StatusCode(StatusCodes.Status201Created,new {message="User Created"});
+    }
     
 }

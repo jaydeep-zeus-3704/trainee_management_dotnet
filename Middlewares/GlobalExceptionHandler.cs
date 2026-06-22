@@ -29,7 +29,7 @@ namespace trainee_management.Middlewares
                 leaveOpen: true))
                 {
                     string body = await reader.ReadToEndAsync();
-                    Console.WriteLine(body);
+                    
                      if (string.IsNullOrWhiteSpace(body))
                      {
                             context.Response.StatusCode = StatusCodes.Status400BadRequest;
