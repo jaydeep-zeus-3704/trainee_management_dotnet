@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
 using trainee_management.Services;
 
@@ -13,7 +14,13 @@ public class SubmissionController : ControllerBase
    private readonly ISubmissionService _submission_service;
    private readonly IFileStorageSerivce _file_storage_service;
    private readonly ILogger<SubmissionController> _logger;
-   public SubmissionController(ISubmissionService submission_service,IFileStorageSerivce file_storage_service, ILogger <SubmissionController> logger)
+
+   public SubmissionController(
+    ISubmissionService submission_service,
+    IFileStorageSerivce file_storage_service,
+     ILogger <SubmissionController> logger
+     
+     )
    {
     _submission_service=submission_service;
     _logger=logger;

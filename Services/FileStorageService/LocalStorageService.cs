@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using trainee_management.Database;
 using trainee_management.Exceptions;
+using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
 
 namespace trainee_management.Services;
@@ -9,10 +10,14 @@ public class LocalStorageService : IFileStorageSerivce
 {
    private readonly AppDBContext _context;
    private readonly string _storage_path;
-   public LocalStorageService(AppDBContext context)
+   private readonly IRabbitMQPublisher  _publisher;
+
+   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher)
    {
     _context=context;
     _storage_path=Environment.GetEnvironmentVariable("LocalStorage")!;
+    _publisher=publisher;
+    
    }
 
     public async Task<SubmissionFilesResponse> SaveAsync(IFormFile file,int userId,int submissionId)
@@ -45,6 +50,17 @@ public class LocalStorageService : IFileStorageSerivce
         };
         _context.Metadata.Add(data);
         await _context.SaveChangesAsync();
+
+        SubmissionProcessingRequested message=new SubmissionProcessingRequested
+        {
+            FileId=data.Id,
+            MessageId=Guid.NewGuid(),
+            CorrelationId=Guid.NewGuid(),
+            ContractVersion=1,
+            RequestedAt=DateTime.UtcNow,
+            SubmissionId=submissionId
+        };
+        await _publisher.PublishMessageAsync(message);
         return new SubmissionFilesResponse(data,user.Username);
     }
 

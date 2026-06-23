@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
 using Microsoft.OpenApi;
+using RabbitMQ.Client;
 
 Env.Load();
 
@@ -15,9 +16,18 @@ Env.Load();
 
 // Add services to the container.
 
+ConnectionFactory factory = new ConnectionFactory
+{
+    HostName = builder.Configuration["RabbitMQ:Host"]!,
+    UserName = Environment.GetEnvironmentVariable("RabbitMQUsername")!,
+    Password = Environment.GetEnvironmentVariable("RabbitMQPassword")!,
+};
+
+IConnection connection = await factory.CreateConnectionAsync();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
+builder.Services.AddSingleton(connection);
+builder.Services.AddSingleton<IRabbitMQPublisher,RabbitMQPublisher>();
 builder.Services.AddScoped<ItraineeService, TraineeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMentorService,MentorService>();
@@ -46,15 +56,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB
 });
 
-
 string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: myAllowSpecificOrigins,
@@ -74,20 +81,14 @@ builder.Services.AddStackExchangeRedisCache(options =>
     
  });
 
-
-
 builder.Services.AddAuthorization();
-
 string connectionString =Environment.GetEnvironmentVariable("ConnectionString")!;
-
 builder.Services.AddControllers().AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-
 builder.Services.AddSwaggerGen(options =>
 {
     // var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -108,17 +109,7 @@ builder.Services.AddSwaggerGen(options =>
         [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });
- 
-
-    
-
-
 var app = builder.Build();
-
-
-
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -127,18 +118,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
 app.UseAuthentication();
-
 app.UseHttpsRedirection();
-
-
 app.UseCors(myAllowSpecificOrigins);
-
 app.UseAuthorization();
-
-
-
 app.MapControllers();
-
 app.Run();
