@@ -25,6 +25,7 @@ public class SubmissionResponse
     
     public SubmissionResponse(Submission s)
     {
+        Id=s.Id;
         TaskAssignmentId=s.TaskAssignmentId;
         SubmissionUrl=s.SubmissionUrl;
         Notes=s.Notes;

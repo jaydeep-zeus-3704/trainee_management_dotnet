@@ -27,7 +27,7 @@ public class MentorController : ControllerBase
         if (status == null) status = string.Empty;
         if(pageNumber<1) throw new ValidationException("Invalid page number");
         if(pageSize<1)  throw new ValidationException("Invalid page size");
-        GetAllDTO<MentorResponse> response = await _mentor_service.getMentors(searchTerm, status, pageNumber, pageSize);
+        GetAllDTO<MentorResponse> response = await _mentor_service.GetMentors(searchTerm, status, pageNumber, pageSize);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Mentor List Fetched Sucessfully");
         return StatusCode(200, new { response, message = "Mentor List Fetched Sucessfully!" });
     }
@@ -35,7 +35,7 @@ public class MentorController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> createMentor(MentorRequest request)
     {
-        await _mentor_service.createMentor(request);
+        await _mentor_service.CreateMentor(request);
         _logger.LogInformation($"\nStatus Code:201\nmessage: mentor created sucessfully\npath: get - api/mentor/create");
         return StatusCode(201, new { message = "Mentor created sucessfully" });
     }
@@ -44,7 +44,7 @@ public class MentorController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> getMentorById(int id)
     {
-        MentorResponse response = await _mentor_service.getMentorById(id);
+        MentorResponse response = await _mentor_service.GetMentorById(id);
         _logger.LogInformation($"\nStatus Code:200\nmessage: mentor returned sucessfully\npath: get - api/mentor/{id}");
         return StatusCode(200, new { mentor = response, message = $"Mentor with id {id} returned sucessfully" });
     }
@@ -53,7 +53,7 @@ public class MentorController : ControllerBase
     [HttpPut("{id:int}/update")]
     public async Task<IActionResult> updateMentor(int id, MentorRequest request)
     {
-        await _mentor_service.updateMentor(id, request);
+        await _mentor_service.UpdateMentor(id, request);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Mentor updated sucessfully\npath: put - api/mentor/{id}");
         return StatusCode(200, new { message = "Mentor Updated Sucessfully" });
     }
@@ -63,7 +63,7 @@ public class MentorController : ControllerBase
     [HttpDelete("{id:int}/delete")]
     public async Task<IActionResult> deleteMentor(int id)
     {
-        await _mentor_service.deleteMentor(id);
+        await _mentor_service.DeleteMentor(id);
         _logger.LogInformation($"\nStatus Code:204\nmessage: Mentor deleted sucessfully\npath: delete - api/mentor/{id}");
         return StatusCode(204);
     }

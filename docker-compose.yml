@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/mysql:latest
+    container_name: mysql_server
+    restart: always
+    environment:
+      MYSQL_DATABASE: trainee_management
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/redis:latest
+    container_name: redis_server
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  mysql_data:
+  redis_data:

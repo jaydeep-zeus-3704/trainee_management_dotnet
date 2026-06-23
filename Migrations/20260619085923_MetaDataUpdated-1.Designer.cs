@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using trainee_management.Database;
 
@@ -11,9 +12,11 @@ using trainee_management.Database;
 namespace trainee_management.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260619085923_MetaDataUpdated-1")]
+    partial class MetaDataUpdated1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,9 +155,6 @@ namespace trainee_management.Migrations
                     b.Property<int>("Size")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubmissionId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime(6)");
 
@@ -162,8 +162,6 @@ namespace trainee_management.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SubmissionId");
 
                     b.ToTable("Metadata");
                 });
@@ -350,17 +348,6 @@ namespace trainee_management.Migrations
                         .IsRequired();
 
                     b.Navigation("TaskAssignment");
-                });
-
-            modelBuilder.Entity("trainee_management.Models.Entities.Metadata", b =>
-                {
-                    b.HasOne("Submission", "Submission")
-                        .WithMany()
-                        .HasForeignKey("SubmissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Submission");
                 });
 
             modelBuilder.Entity("trainee_management.Models.Entities.TaskAssignment", b =>

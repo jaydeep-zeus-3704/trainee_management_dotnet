@@ -7,9 +7,11 @@ using trainee_management.Services;
 public class SubmissionService : ISubmissionService
 {
     private readonly AppDBContext _context;
-    public SubmissionService(AppDBContext context)
+    private readonly ICacheService _cache_service;
+    public SubmissionService(AppDBContext context,ICacheService cache_service)
     {
         _context=context;
+        _cache_service=cache_service;
     }
 
     public  async Task CreateSubmission(SubmissionRequest request)
@@ -28,9 +30,14 @@ public class SubmissionService : ISubmissionService
     }
 
     public async Task<SubmissionResponse> GetSubmission(int id)
-    {
-        Submission submission=await _context.Submission.FindAsync(id) 
-        ?? throw new NotFoundException("Id not found");
+    {   
+        string key=$"submission_{id}";
+        Submission? submission=await _cache_service.GetDataAsync<Submission>(key);
+        if (submission == null)
+        {
+            submission=await _context.Submission.FindAsync(id) ?? throw new NotFoundException("Id not found");
+            await _cache_service.SetDataAsync(key,submission);
+        }
         SubmissionResponse res=new SubmissionResponse(submission);
         return res;
     }

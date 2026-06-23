@@ -5,14 +5,14 @@ namespace trainee_management.Services;
 public interface ILearningTaskService
 {
     
-    public   Task createLearningTask(LearningTaskRequest request);
+    public   Task CreateLearningTask(LearningTaskRequest request);
 
-    public Task<LearningTaskResponse> getLearningTaskById(int id);
+    public Task<LearningTaskResponse> GetLearningTaskById(int id);
 
-    public  Task deleteLearningTask(int id);
+    public  Task DeleteLearningTask(int id);
 
-    public  Task updateTask(int id,LearningTaskRequest request);
+    public  Task UpdateTask(int id,LearningTaskRequest request);
 
-      public  Task<GetAllDTO<LearningTaskResponse>> getLearningTasks(string searchParams, string status, int pageNumber, int pageSize);
+      public  Task<GetAllDTO<LearningTaskResponse>> GetLearningTasks(string searchParams, string status, int pageNumber, int pageSize);
 
 }

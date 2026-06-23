@@ -6,9 +6,12 @@ using trainee_management.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.OpenApi.Models;
+using DotNetEnv;
+using Microsoft.OpenApi;
 
-var builder = WebApplication.CreateBuilder(args);
+Env.Load();
+
+ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -22,6 +25,8 @@ builder.Services.AddScoped<ILearningTaskService,LearningTaskService>();
 builder.Services.AddScoped<ITaskAssignmentService,TaskAssignmentService>();
 builder.Services.AddScoped<ISubmissionService,SubmissionService>();
 builder.Services.AddScoped<IReviewService,ReviewService>();
+builder.Services.AddScoped<IFileStorageSerivce,LocalStorageService>();
+builder.Services.AddScoped<ICacheService,CacheService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters=new TokenValidationParameters
@@ -34,14 +39,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration["Jwt:Key"]!
+                Environment.GetEnvironmentVariable("Key")!
             )
         ),
 
     };
 });
 
-var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB
+});
+
+
+string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
 {
@@ -54,13 +66,19 @@ builder.Services.AddCors(options =>
         });
 });
 
-
+string s=builder.Configuration.GetConnectionString("RedisConnection")!;
+Console.WriteLine($"Redis : {s}");
+builder.Services.AddStackExchangeRedisCache(options =>
+ {
+     options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    
+ });
 
 
 
 builder.Services.AddAuthorization();
-string? connectionString = builder.Configuration.GetConnectionString("Database");
 
+string connectionString =Environment.GetEnvironmentVariable("ConnectionString")!;
 
 builder.Services.AddControllers().AddJsonOptions(options =>
     {
@@ -68,39 +86,32 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     });
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-builder.Services.AddSwaggerGen(options=>{
-    options.SwaggerDoc("v1",new OpenApiInfo
+
+
+builder.Services.AddSwaggerGen(options =>
+{
+    // var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    // options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Title="trainee_management_api",
-        Version="v1"
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
     });
 
-    options.AddSecurityDefinition("Bearer",new OpenApiSecurityScheme
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-       Name="Authorization" ,
-       Type=SecuritySchemeType.Http,
-       Scheme="Bearer",
-       BearerFormat="JWT",
-       In=ParameterLocation.Header,
-       Description="Enter your jwt token here"
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
+});
+ 
+
     
-     options.AddSecurityRequirement(new OpenApiSecurityRequirement
-     {
-         {
-             new OpenApiSecurityScheme
-             {
-                 Reference=new OpenApiReference
-                 {
-                     Type=ReferenceType.SecurityScheme,
-                     Id="Bearer"
-                 }
-             },
-             Array.Empty<string>()
-         }
-     });
-  
-   });
+
 
 var app = builder.Build();
 

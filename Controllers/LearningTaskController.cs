@@ -22,7 +22,7 @@ public class LearningTaskController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> createLearningTask(LearningTaskRequest request)
     {
-        await _learning_task_service.createLearningTask(request);
+        await _learning_task_service.CreateLearningTask(request);
         _logger.LogInformation($"\nStatus Code:201\nmessage: Learning Task created sucessfully\npath: post - api/learning-task");
         return StatusCode(201, new { message = "learning task created !" });
     }
@@ -30,9 +30,9 @@ public class LearningTaskController : ControllerBase
     //get learning task by id
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> getLearningTaskById(int id)
+    public async Task<IActionResult> GetLearningTaskById(int id)
     {
-        LearningTaskResponse response = await _learning_task_service.getLearningTaskById(id);
+        LearningTaskResponse response = await _learning_task_service.GetLearningTaskById(id);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Learning Task returned sucessfully\npath: get - api/learning-task/{id}");
         return StatusCode(200, new { response, message = $"learning task with id {id} fetched sucessfully" });
     }
@@ -42,7 +42,7 @@ public class LearningTaskController : ControllerBase
     [HttpDelete("{id:int}/delete")]
     public async Task<IActionResult> deleteLearningTask(int id)
     {
-        await _learning_task_service.deleteLearningTask(id);
+        await _learning_task_service.DeleteLearningTask(id);
         _logger.LogInformation($"\nStatus Code:204\nmessage: Learning Task deleted sucessfully\npath: delete - api/learning-task/{id}");
         return StatusCode(204);
     }
@@ -50,9 +50,9 @@ public class LearningTaskController : ControllerBase
     //update learning task
     [Authorize]
     [HttpPut("{id:int}/update")]
-    public async Task<IActionResult> updateLearningTask(int id, LearningTaskRequest request)
+    public async Task<IActionResult> UpdateLearningTask(int id, LearningTaskRequest request)
     {
-         await _learning_task_service.updateTask(id,request);
+         await _learning_task_service.UpdateTask(id,request);
          _logger.LogInformation($"\nStatus Code:200\nmessage: Learning Task updated sucessfully\npath: put - api/learning-task/{id}");
         return StatusCode(200, new {message=$"task with id {id} updated sucessfully"});
     }
@@ -66,7 +66,7 @@ public class LearningTaskController : ControllerBase
         if (status == null) status = string.Empty;
         if (pageNumber < 1) { pageNumber = 1; }
         if (pageSize < 1) { pageSize = 5; }
-        GetAllDTO<LearningTaskResponse> response = await _learning_task_service.getLearningTasks(searchTerm, status, pageNumber, pageSize);
+        GetAllDTO<LearningTaskResponse> response = await _learning_task_service.GetLearningTasks(searchTerm, status, pageNumber, pageSize);
         _logger.LogInformation($"\nStatus Code:200\nmessage: Task List Fetched Sucessfully");
         return StatusCode(200, new { response, message = "Task List Fetched Sucessfully!" });
         

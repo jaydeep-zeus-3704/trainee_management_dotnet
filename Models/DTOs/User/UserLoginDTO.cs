@@ -5,10 +5,10 @@ public class UserLoginDTO
 {
 
     [Required(ErrorMessage ="Username is required")]
-    public  required  string  Username{get;set;}
+    public  string  Username{get;set;}=string.Empty;
 
     [Required(ErrorMessage ="password is required")]
-    public  required string password{get;set;}
+    public  string password{get;set;}=string.Empty;
     
 
 }

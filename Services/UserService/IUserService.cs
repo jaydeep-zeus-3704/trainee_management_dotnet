@@ -4,7 +4,7 @@ namespace trainee_management.Services;
 
 public interface IUserService
 {
-    public void createUser(UserDTO request);
+    public void CreateUser(UserDTO request);
 
-    public LoginResponse loginUser(UserLoginDTO request);
+    public LoginResponse LoginUser(UserLoginDTO request);
 }

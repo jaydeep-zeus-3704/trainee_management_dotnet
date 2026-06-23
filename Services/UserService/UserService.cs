@@ -1,5 +1,4 @@
 
-using Microsoft.AspNetCore.Identity;
 using trainee_management.Database;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
@@ -19,7 +18,7 @@ public class UserService : IUserService
             _configuration=configuration;
         }
 
-    public void createUser(UserDTO request)
+    public void CreateUser(UserDTO request)
     {
         string hashedPassword=PasswordUtils.hashPassword(request.Username,request.password);
 
@@ -37,7 +36,7 @@ public class UserService : IUserService
         _context.SaveChanges();
     }
 
-    public LoginResponse loginUser(UserLoginDTO request)
+    public LoginResponse LoginUser(UserLoginDTO request)
     {   
         User? user=_context.User.FirstOrDefault(u=>u.Username==request.Username);
         if (user == null)
@@ -50,7 +49,8 @@ public class UserService : IUserService
         {
             throw new InvalidCredentialsException("Invalid Credentials please try different password");
         }
-        
+        int expiresIn=int.Parse(_configuration["Jwt:ExpiresIn"]!);
+
         UserResponse userRes=new UserResponse
         {
           Id=user.Id,
@@ -61,7 +61,7 @@ public class UserService : IUserService
         LoginResponse res=new LoginResponse
         {
             token=JwtUtils.GenerateToken(user,_configuration),
-            expiresIn="3600",
+            expiresIn=(expiresIn*60).ToString(),
             user=userRes
         };
         return res;

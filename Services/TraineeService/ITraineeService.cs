@@ -7,17 +7,17 @@ namespace trainee_management.Services
 
     public interface ItraineeService
     {
-        Task<GetAllDTO<TraineeResponse>> returnTrainees(string searchTerm,string status,int pageNumber,int pageSize);
-        Task<Trainee?> getTraineeById(int id);
+        Task<GetAllDTO<TraineeResponse>> ReturnTrainees(string searchTerm,string status,int pageNumber,int pageSize);
+        Task<Trainee?> GetTraineeById(int id);
         
-        Task createTrainee(CreateTraineeRequest request);
-        Task checkIfTraineeExists(string email);
+        Task CreateTrainee(CreateTraineeRequest request);
+        Task CheckIfTraineeExists(string email);
 
-        TraineeResponse getTraineeResponse(Trainee trainee);
+        TraineeResponse GetTraineeResponse(Trainee trainee);
 
-        Task updateTrainee(UpdateTraineeRequest request,Trainee trainee);
+        Task UpdateTrainee(UpdateTraineeRequest request,int id);
 
-        Task<bool> deleteTrainee(Trainee trainee);
+        Task DeleteTrainee(Trainee trainee);
 
       
     }

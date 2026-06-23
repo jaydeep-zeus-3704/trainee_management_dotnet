@@ -16,9 +16,9 @@ public class MentorService : IMentorService
         _context = context;
     }
 
-    public async Task createMentor(MentorRequest request)
+    public async Task CreateMentor(MentorRequest request)
     {
-        await mentorExistsByEmail(request.Email);
+        await MentorExistsByEmail(request.Email);
         Mentor mentor = new Mentor(request);
         MentorValidator validator = new MentorValidator(mentor);
         if (!validator.Validate())
@@ -29,7 +29,7 @@ public class MentorService : IMentorService
         await _context.SaveChangesAsync();
     }
 
-    public async Task mentorExistsByEmail(string email)
+    public async Task MentorExistsByEmail(string email)
     {
         Mentor? mentor = await _context.Mentor.FirstOrDefaultAsync(m => m.Email == email);
         if (mentor != null)
@@ -38,12 +38,18 @@ public class MentorService : IMentorService
         }
     }
 
-    public async Task<GetAllDTO<MentorResponse>> getMentors(string searchParams, string status, int pageNumber, int pageSize)
+    public async Task<GetAllDTO<MentorResponse>> GetMentors(string searchParams, string status, int pageNumber, int pageSize)
     {
-        IQueryable<Mentor> mentors = _context.Mentor;
-        mentors = await filterBySearch(searchParams, status, mentors);
-        mentors = getPaginatedData(pageNumber, pageSize, mentors);
-        List<MentorResponse> mentorList = await mentors.Select(m => new MentorResponse(m)).ToListAsync();
+        List<Mentor> mentors=[];
+            if(Enum.TryParse(status,true,out MentorStatus result))
+            {
+                mentors=_context.Mentor.FromSqlInterpolated($"CALL GetMentors({searchParams},{(int)result},{pageNumber},{pageSize})").ToList();
+            }
+            else
+            {
+                throw new ValidationException("Invalid Status");
+            }
+        List<MentorResponse> mentorList =  mentors.Select(m => new MentorResponse(m)).ToList();
         GetAllDTO<MentorResponse> response = new GetAllDTO<MentorResponse>
         {
             pageNumber = pageNumber,
@@ -54,42 +60,14 @@ public class MentorService : IMentorService
         return response;
     }
 
-
-    public async Task<IQueryable<Mentor>> filterBySearch(string searchParams, string status, IQueryable<Mentor> mentors)
-    {
-        if (!string.IsNullOrWhiteSpace(searchParams))
-        {
-            searchParams = searchParams.Trim().ToLower();
-            mentors = mentors.Where(t =>
-                t.FirstName.ToLower().Contains(searchParams) ||
-                t.LastName.ToLower().Contains(searchParams) ||
-                t.Email.ToLower().Contains(searchParams) ||
-                t.Expertise.ToLower().Contains(searchParams)
-            );
-        }
-
-        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<MentorStatus>(status, true, out var result))
-        {
-            mentors = mentors.Where(t => t.Status == result);
-        }
-        return mentors;
-    }
-
-    //pagination
-    public IQueryable<Mentor> getPaginatedData(int pageNumber, int pageSize, IQueryable<Mentor> mentors)
-    {
-        mentors = mentors.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-        return mentors;
-    }
-
-    public async Task<MentorResponse> getMentorById(int id)
+    public async Task<MentorResponse> GetMentorById(int id)
     {
         Mentor mentor = await _context.Mentor.FindAsync(id)
         ?? throw new NotFoundException("mentor Not found");
         return new MentorResponse(mentor);
     }
 
-    public async Task updateMentor(int id,MentorRequest request)
+    public async Task UpdateMentor(int id,MentorRequest request)
     {
         Mentor mentor = await _context.Mentor.FindAsync(id)
          ?? throw new NotFoundException("mentor Not found");
@@ -102,7 +80,7 @@ public class MentorService : IMentorService
         await _context.SaveChangesAsync();
     }
 
-    public async Task deleteMentor(int id)
+    public async Task DeleteMentor(int id)
     {
         Mentor mentor = await _context.Mentor.FindAsync(id)
         ?? throw new NotFoundException("mentor Not found");

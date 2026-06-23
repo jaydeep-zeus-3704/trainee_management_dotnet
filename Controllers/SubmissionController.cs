@@ -1,18 +1,23 @@
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using trainee_management.Models.Entities;
 using trainee_management.Services;
 
 [ApiController]
+[Authorize]
 [Route("api/submissions")]
 public class SubmissionController : ControllerBase
 {
    private readonly ISubmissionService _submission_service;
+   private readonly IFileStorageSerivce _file_storage_service;
    private readonly ILogger<SubmissionController> _logger;
-   public SubmissionController(ISubmissionService submission_service,ILogger <SubmissionController> logger)
+   public SubmissionController(ISubmissionService submission_service,IFileStorageSerivce file_storage_service, ILogger <SubmissionController> logger)
    {
     _submission_service=submission_service;
     _logger=logger;
+    _file_storage_service=file_storage_service;
    }
 
 
@@ -44,5 +49,15 @@ public class SubmissionController : ControllerBase
         return StatusCode(200,new {submission,message="submissions fetched sucessfully"});
     } 
 
+    
+    [HttpPost("{submissionId:int}/files")]
+      public async Task<IActionResult> UploadFile(IFormFile file,int submissionId)
+    {   
+
+        int userId=int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        SubmissionFilesResponse response=await _file_storage_service.SaveAsync(file,userId,submissionId);
+        return StatusCode(201,new {response,message="File Uploaded sucessfully"});
+    }
+    
 
 }
