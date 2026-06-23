@@ -64,10 +64,8 @@ public class TaskAssignmentService : ITaskAssignmentService
        ?? throw new NotFoundException("task not assigned with this id");
         task.Status = request.Status;
         string key = $"task_assignment_{id}";
-       
         await _context.SaveChangesAsync();
         await _cache_service.SetDataAsync(key, task);
-        
     }
 
 

@@ -22,7 +22,33 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
-
+    
+  rabbitmq:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/rabbitmq
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+    configs:
+      - source: rabbitmq-plugins
+        target: /etc/rabbitmq/enabled_plugins
+    volumes:
+      - rabbitmq_lib:/var/lib/rabbitmq/
+      - rabbitmq_log:/var/log/rabbitmq
+ 
+configs:
+  rabbitmq-plugins:
+    content: "[rabbitmq_management]."  
+ 
 volumes:
   mysql_data:
   redis_data:
+  rabbitmq_lib:
+    driver: local
+  rabbitmq_log:
+    driver: local
+
