@@ -16,14 +16,36 @@ public class RabbitMQPublisher:IRabbitMQPublisher
     public async Task PublishMessageAsync<T>(T message)
     {
          IChannel channel = await _connection.CreateChannelAsync();
-        
+         string queueName=_configuration["RabbitMQ:QueueName"]!;
+        var queueArguments = new Dictionary<string, object?>
+        {
+         { "x-dead-letter-exchange", "submission-processing-dlx" },
+         { "x-dead-letter-routing-key", queueName }
+        };
+
         await channel.QueueDeclareAsync(
-                queue: _configuration["RabbitMQ:QueueName"]!,
+                queue: queueName,
                 durable: true,       // Queue survives broker restarts
                 exclusive: false,    // Accessible by other connections
                 autoDelete: false,   // Do not delete when consumers disconnect
-                arguments: null
+                arguments: queueArguments
          );
+
+        await channel.ExchangeDeclareAsync(
+               "submission-processing-dlx",
+               ExchangeType.Direct,
+               durable: true);
+
+            await channel.QueueDeclareAsync("submission-processing-dead-letter",
+               durable: true,
+               exclusive: false,
+               autoDelete: false);
+
+            await channel.QueueBindAsync("submission-processing-dead-letter", 
+            "submission-processing-dlx", 
+            routingKey: queueName);
+
+
         string jsonString = JsonSerializer.Serialize(message);
         byte[] body = Encoding.UTF8.GetBytes(jsonString);
         var properties = new BasicProperties
