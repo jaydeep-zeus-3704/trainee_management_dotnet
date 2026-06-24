@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using trainee_management.Database;
+using trainee_management.Enums;
 using trainee_management.Exceptions;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
@@ -48,19 +49,27 @@ public class LocalStorageService : IFileStorageSerivce
             GeneratedStorageName=fileName,
             SubmissionId=submissionId
         };
-        _context.Metadata.Add(data);
+        await _context.Metadata.AddAsync(data);
         await _context.SaveChangesAsync();
-
+        Guid correlationId=Guid.NewGuid();
         SubmissionProcessingRequested message=new SubmissionProcessingRequested
         {
             FileId=data.Id,
             MessageId=Guid.NewGuid(),
-            CorrelationId=Guid.NewGuid(),
+            CorrelationId=correlationId,
             ContractVersion=1,
             RequestedAt=DateTime.UtcNow,
             SubmissionId=submissionId
         };
+        ProcessingJob job=new ProcessingJob
+        {
+            Attempts=0,
+            Status=JobStatus.QUEUED,
+            CorrelationId=correlationId,
+        };
         await _publisher.PublishMessageAsync(message);
+        await _context.ProcessingJob.AddAsync(job);
+        await _context.SaveChangesAsync();
         return new SubmissionFilesResponse(data,user.Username);
     }
 

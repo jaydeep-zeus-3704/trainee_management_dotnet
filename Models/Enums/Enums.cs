@@ -49,4 +49,12 @@ namespace trainee_management.Enums
         CHANGES_REQUIRED,
         REJECTED
     }
+    
+    public enum JobStatus
+    {
+        QUEUED,
+        PROCESSING,
+        COMPLETED,
+        FAILED
+    }
 }

@@ -1,7 +1,7 @@
 DELIMITER $$
 CREATE PROCEDURE GetTrainees(
  IN p_search VARCHAR(100),
- IN p_status VARCHAR(20),
+ IN p_status INT,
  IN p_pageNo INT,
  IN p_pageSize INT
 )

@@ -19,4 +19,6 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
 
     public DbSet<Metadata> Metadata {get;set;}
 
+    public DbSet<ProcessingJob> ProcessingJob {get;set;}
+
 }
