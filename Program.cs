@@ -58,7 +58,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB
+    serverOptions.Limits.MaxRequestBodySize = 524288000; 
 });
 
 string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -67,7 +67,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: myAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("https://localhost:5173", "http://localhost:3000") // Your frontend URLs
+            policy.WithOrigins("https://localhost:5173", "http://localhost:3000") 
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -91,8 +91,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddSwaggerGen(options =>
 {
-    // var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    // options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -110,7 +108,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 var app = builder.Build();
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
