@@ -11,7 +11,7 @@ public interface ICacheService
 
 public class CacheService:ICacheService {
     private readonly IDistributedCache _cache; 
-
+    
     public CacheService(IDistributedCache cache) {
         _cache = cache;
     }
@@ -25,6 +25,7 @@ public class CacheService:ICacheService {
 
         string serializedData=JsonSerializer.Serialize(data);
         await _cache.SetStringAsync(key,serializedData,options);
+     
     }
 
     public async Task<T?> GetDataAsync<T>(string key) {

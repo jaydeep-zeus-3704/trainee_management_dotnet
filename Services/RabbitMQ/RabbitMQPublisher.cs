@@ -25,9 +25,9 @@ public class RabbitMQPublisher:IRabbitMQPublisher
 
         await channel.QueueDeclareAsync(
                 queue: queueName,
-                durable: true,       // Queue survives broker restarts
-                exclusive: false,    // Accessible by other connections
-                autoDelete: false,   // Do not delete when consumers disconnect
+                durable: true,       
+                exclusive: false,    
+                autoDelete: false,   
                 arguments: queueArguments
          );
 
@@ -50,15 +50,16 @@ public class RabbitMQPublisher:IRabbitMQPublisher
         byte[] body = Encoding.UTF8.GetBytes(jsonString);
         var properties = new BasicProperties
             {
-                DeliveryMode = DeliveryModes.Persistent // Message survives broker restarts
+                DeliveryMode = DeliveryModes.Persistent 
             };
          await channel.BasicPublishAsync(
-                exchange: string.Empty, // Default exchange routes directly to queues using the routing key
+                exchange: string.Empty, 
                 routingKey: _configuration["RabbitMQ:QueueName"]!,
                 mandatory: true,
                 basicProperties: properties,
                 body: body
             );
+
         Console.WriteLine($"[x] Sent: {jsonString}");
 
     }

@@ -67,9 +67,9 @@ public class LocalStorageService : IFileStorageSerivce
             Status=JobStatus.QUEUED,
             CorrelationId=correlationId,
         };
-        await _publisher.PublishMessageAsync(message);
         await _context.ProcessingJob.AddAsync(job);
         await _context.SaveChangesAsync();
+        await _publisher.PublishMessageAsync(message);
         return new SubmissionFilesResponse(data,user.Username);
     }
 
