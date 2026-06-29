@@ -17,7 +17,7 @@ public class RabbitMQPublisher:IRabbitMQPublisher
     {
          IChannel channel = await _connection.CreateChannelAsync();
          string queueName=_configuration["RabbitMQ:QueueName"]!;
-        var queueArguments = new Dictionary<string, object?>
+        Dictionary<string,object?> queueArguments = new Dictionary<string, object?>
         {
          { "x-dead-letter-exchange", "submission-processing-dlx" },
          { "x-dead-letter-routing-key", queueName }
@@ -48,10 +48,18 @@ public class RabbitMQPublisher:IRabbitMQPublisher
 
         string jsonString = JsonSerializer.Serialize(message);
         byte[] body = Encoding.UTF8.GetBytes(jsonString);
+        
+        
+
+
         var properties = new BasicProperties
-            {
-                DeliveryMode = DeliveryModes.Persistent 
-            };
+        {
+            DeliveryMode = DeliveryModes.Persistent ,
+        };
+
+
+
+
          await channel.BasicPublishAsync(
                 exchange: string.Empty, 
                 routingKey: _configuration["RabbitMQ:QueueName"]!,

@@ -57,6 +57,39 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+  
+  trainee_management:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    image: trainee_management:latest
+    container_name: trainee_management_app
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./appsettings.json:/app/appsettings.json:ro
+      - ../Files:/app/data
+    
+  trainee_worker:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    image: rabbitmq_worker:latest
+    container_name: rabbitmq_worker
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./appsettings.json:/app/appsettings.json:ro
+    
+
  
 configs:
   rabbitmq-plugins:
@@ -69,3 +102,4 @@ volumes:
     driver: local
   rabbitmq_log:
     driver: local
+  

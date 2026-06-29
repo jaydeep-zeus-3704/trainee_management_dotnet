@@ -46,12 +46,10 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 });
 
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();

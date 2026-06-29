@@ -92,9 +92,10 @@ public class LocalStorageService : IFileStorageSerivce
         }
     }
 
-    public Task<bool> ExistsAsync(string filePath)
+    public Task<bool> ExistsAsync(string fileName)
     {
-        return Task.FromResult(File.Exists(filePath)); 
+        string FilePath=Path.Combine(_storage_path,fileName);
+        return Task.FromResult(File.Exists(FilePath)); 
     }
 
      public async Task<FileStream> OpenReadAsync(int id)
@@ -109,6 +110,7 @@ public class LocalStorageService : IFileStorageSerivce
         FileStream stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
         return stream;
     }
+
 
     
 
