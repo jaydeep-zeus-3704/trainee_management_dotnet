@@ -1,4 +1,6 @@
 
+/* Filters learning tasks by title , description ,expected tech stack and status*/
+DROP PROCEDURE IF EXISTS GetLearningTasks;
 DELIMITER $$
 CREATE PROCEDURE GetLearningTasks(
  IN p_search VARCHAR(100),
@@ -7,14 +9,27 @@ CREATE PROCEDURE GetLearningTasks(
  IN p_pageSize INT
 )
 BEGIN 
-DECLARE v_offset INT;
-SET v_offset=(p_pageNo-1)*p_pageSize;
-select * from learningtask
-where p_search IS NULL 
-OR Title Like CONCAT('%',p_search ,'%')
-OR Description Like CONCAT('%',p_search ,'%') 
-OR ExpectedTechStack Like CONCAT('%',p_search ,'%')
-and (p_status is null OR status=p_status)
-limit v_offset,p_pageSize;
+    DECLARE v_offset INT;
+    DECLARE v_search_pattern VARCHAR(102);
+    
+    SET v_offset = (p_pageNo - 1) * p_pageSize;
+
+    IF p_search IS NOT NULL AND p_search != '' THEN
+        SET v_search_pattern = CONCAT('%', p_search, '%');
+    ELSE
+        SET v_search_pattern = NULL;
+    END IF;
+
+    SELECT * FROM LearningTask
+    WHERE (
+        v_search_pattern IS NULL 
+        OR Title LIKE v_search_pattern
+        OR Description LIKE v_search_pattern 
+        OR ExpectedTechStack LIKE v_search_pattern
+    )
+    AND (p_status IS NULL OR status = p_status)
+    ORDER BY Id ASC
+    LIMIT v_offset, p_pageSize;
 END $$
+
 DELIMITER ;

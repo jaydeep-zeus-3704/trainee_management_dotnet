@@ -29,7 +29,7 @@ public class TraineeController : ControllerBase
         if(pageNumber<1) throw new ValidationException("Invalid page number");
         if(pageSize<1)  throw new ValidationException("Invalid page size");
         GetAllDTO<TraineeResponse> response=await _traineeService.ReturnTrainees(searchTerm,status,pageNumber,pageSize);
-        _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee List Fetched Sucessfully");
+        _logger.LogInformation("\nStatus Code:200\nmessage: Trainee List Fetched Sucessfully");
         return StatusCode(200, new { response, message = "Trainee List Fetched Sucessfully!" });
     }
 
@@ -40,20 +40,20 @@ public class TraineeController : ControllerBase
         if(request.Email==null) return StatusCode(400,new {error="Email not provided"});
         await _traineeService.CheckIfTraineeExists(request.Email);
         await _traineeService.CreateTrainee(request);
-        _logger.LogInformation($"\nStatus Code:201\nmessage: Trainee Added to database");
+        _logger.LogInformation($"Status Code:201 message: Trainee Added to database");
         return StatusCode(201, new {  message = "Trainee Added to Database" });
     }
 
 
     //get trainee details 
-    [Authorize]
+    
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTraineeDetails(int id)
     {
         Trainee trainee=await _traineeService.GetTraineeById(id)
          ??  throw new NotFoundException("Trainee Not found");
         TraineeResponse response=_traineeService.GetTraineeResponse(trainee);
-        _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee returned sucessfully\npath: get - api/Trainee/{id}");
+        _logger.LogInformation($"Status Code:200 message: Trainee returned sucessfully\npath: get - api/Trainee/{id}");
         return StatusCode(200,new {trainee=response,message=$"Trainee with id {id} returned sucessfully"});
     }
 
@@ -65,7 +65,7 @@ public class TraineeController : ControllerBase
     {
         if(request==null) throw new ArgumentNullException("Invalid data is provided , null request .");
         await _traineeService.UpdateTrainee(request,id);
-        _logger.LogInformation($"\nStatus Code:200\nmessage: Trainee updated sucessfully\npath: put - api/Trainee/{id}");
+        _logger.LogInformation($"Status Code:200 message: Trainee updated sucessfully path: put - api/Trainee/{id}");
         return StatusCode(200,new {message="Trainee Updated Sucessfully"});
     }
 
@@ -77,7 +77,7 @@ public class TraineeController : ControllerBase
         Trainee trainee=await _traineeService.GetTraineeById(id)
         ?? throw new NotFoundException("Trainee Not found");
         await _traineeService.DeleteTrainee(trainee);
-        _logger.LogInformation($"\nStatus Code:204\nmessage: Trainee deleted sucessfully\npath: delete - api/Trainee/{id}");
+        _logger.LogInformation($"Status Code:204 message: Trainee deleted sucessfully path: delete - api/Trainee/{id}");
         return StatusCode(204);    
     }
 

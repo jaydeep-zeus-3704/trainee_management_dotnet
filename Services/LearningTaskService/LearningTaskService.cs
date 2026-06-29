@@ -50,7 +50,7 @@ public class LearningTaskService:ILearningTaskService
         await _context.SaveChangesAsync();
     }
     
-     public async Task<GetAllDTO<LearningTaskResponse>> GetLearningTasks(string searchParams, string status, int pageNumber, int pageSize)
+     public async Task<GetAllDTO<LearningTaskResponse>> GetLearningTasks(string searchParams, string? status, int pageNumber, int pageSize)
     {
             List<LearningTask> learningTasks=[];
             if(Enum.TryParse(status,true,out LearningTaskStatus result))
@@ -59,7 +59,7 @@ public class LearningTaskService:ILearningTaskService
             }
             else
             {
-                throw new ValidationException("Invalid Status");
+                learningTasks=_context.LearningTask.FromSqlInterpolated($"CALL GetLearningTasks({searchParams},{null},{pageNumber},{pageSize})").ToList();
             }
         List<LearningTaskResponse> learningTaskList =  learningTasks.Select(m => new LearningTaskResponse(m)).ToList();
         GetAllDTO<LearningTaskResponse> response = new GetAllDTO<LearningTaskResponse>

@@ -17,7 +17,7 @@ public class RabbitMQPublisher:IRabbitMQPublisher
     {
          IChannel channel = await _connection.CreateChannelAsync();
          string queueName=_configuration["RabbitMQ:QueueName"]!;
-        var queueArguments = new Dictionary<string, object?>
+        Dictionary<string,object?> queueArguments = new Dictionary<string, object?>
         {
          { "x-dead-letter-exchange", "submission-processing-dlx" },
          { "x-dead-letter-routing-key", queueName }
@@ -25,9 +25,9 @@ public class RabbitMQPublisher:IRabbitMQPublisher
 
         await channel.QueueDeclareAsync(
                 queue: queueName,
-                durable: true,       // Queue survives broker restarts
-                exclusive: false,    // Accessible by other connections
-                autoDelete: false,   // Do not delete when consumers disconnect
+                durable: true,       
+                exclusive: false,    
+                autoDelete: false,   
                 arguments: queueArguments
          );
 
@@ -48,17 +48,26 @@ public class RabbitMQPublisher:IRabbitMQPublisher
 
         string jsonString = JsonSerializer.Serialize(message);
         byte[] body = Encoding.UTF8.GetBytes(jsonString);
-        var properties = new BasicProperties
-            {
-                DeliveryMode = DeliveryModes.Persistent // Message survives broker restarts
-            };
+        
+        
+
+
+        BasicProperties properties = new BasicProperties
+        {
+            DeliveryMode = DeliveryModes.Persistent ,
+        };
+
+
+
+
          await channel.BasicPublishAsync(
-                exchange: string.Empty, // Default exchange routes directly to queues using the routing key
+                exchange: string.Empty, 
                 routingKey: _configuration["RabbitMQ:QueueName"]!,
                 mandatory: true,
                 basicProperties: properties,
                 body: body
             );
+
         Console.WriteLine($"[x] Sent: {jsonString}");
 
     }

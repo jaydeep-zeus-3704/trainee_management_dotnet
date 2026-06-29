@@ -1,121 +1,55 @@
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using trainee_management.Middlewares;
-using trainee_management.Services;
-using trainee_management.Database;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using DotNetEnv;
-using Microsoft.OpenApi;
-using RabbitMQ.Client;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using trainee_management.Configuration;
+
+using trainee_management.Middlewares;
 
 Env.Load();
 
- var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
-ConnectionFactory factory = new ConnectionFactory
-{
-    HostName = builder.Configuration["RabbitMQ:Host"]!,
-    UserName = Environment.GetEnvironmentVariable("RabbitMQUsername")!,
-    Password = Environment.GetEnvironmentVariable("RabbitMQPassword")!,
-};
 
-IConnection connection = await factory.CreateConnectionAsync();
-
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddSingleton(connection);
-builder.Services.AddSingleton<IRabbitMQPublisher,RabbitMQPublisher>();
-builder.Services.AddScoped<ItraineeService, TraineeService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IMentorService,MentorService>();
-builder.Services.AddScoped<ILearningTaskService,LearningTaskService>();
-builder.Services.AddScoped<ITaskAssignmentService,TaskAssignmentService>();
-builder.Services.AddScoped<ISubmissionService,SubmissionService>();
-builder.Services.AddScoped<IReviewService,ReviewService>();
-builder.Services.AddScoped<IFileStorageSerivce,LocalStorageService>();
-builder.Services.AddScoped<ICacheService,CacheService>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters=new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(
-                Environment.GetEnvironmentVariable("Key")!
-            )
-        ),
-
-    };
-});
-
+// Configure Server Limits
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB
+    serverOptions.Limits.MaxRequestBodySize = 524288000; 
 });
 
-string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
-builder.Services.AddCors(options =>
+// Configure Functional Areas via Extensions
+builder.AddApplicationLogging();
+const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddSecurityAndCors(builder.Configuration, myAllowSpecificOrigins);
+builder.Services.AddDataStores(builder.Configuration);
+builder.Services.AddBusinessServices();
+builder.Services.AddApiDocumentation();
+builder.Services.ConfigureHealthCheck(builder.Configuration);
+
+// Handle Async Extensions
+await builder.Services.AddMessagingServicesAsync(builder.Configuration);
+
+WebApplication app = builder.Build();
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
-    options.AddPolicy(name: myAllowSpecificOrigins,
-        policy =>
-        {
-            policy.WithOrigins("https://localhost:5173", "http://localhost:3000") // Your frontend URLs
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    Predicate = check => check.Tags.Contains("live"),
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
-string s=builder.Configuration.GetConnectionString("RedisConnection")!;
-Console.WriteLine($"Redis : {s}");
-builder.Services.AddStackExchangeRedisCache(options =>
- {
-     options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
-    
- });
 
-builder.Services.AddAuthorization();
-string connectionString =Environment.GetEnvironmentVariable("ConnectionString")!;
-builder.Services.AddControllers().AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
-builder.Services.AddDbContext<AppDBContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-builder.Services.AddSwaggerGen(options =>
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {
-    // var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    // options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Description = "Please enter token",
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
-    });
-
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-    });
+    Predicate = check => check.Tags.Contains("ready"),
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
-var app = builder.Build();
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
+
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.UseAuthentication();
@@ -123,4 +57,5 @@ app.UseHttpsRedirection();
 app.UseCors(myAllowSpecificOrigins);
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();

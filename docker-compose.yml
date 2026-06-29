@@ -12,16 +12,28 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: docker-registry-002.zeuslearning.com/zeuslearning/redis:latest
-    container_name: redis_server
+    container_name: redis_server 
     restart: always
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     
   rabbitmq:
     image: docker-registry-002.zeuslearning.com/zeuslearning/rabbitmq
@@ -39,6 +51,45 @@ services:
     volumes:
       - rabbitmq_lib:/var/lib/rabbitmq/
       - rabbitmq_log:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+  
+  trainee_management:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    image: trainee_management:latest
+    container_name: trainee_management_app
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./appsettings.json:/app/appsettings.json:ro
+      - ../Files:/app/data
+    
+  trainee_worker:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    image: rabbitmq_worker:latest
+    container_name: rabbitmq_worker
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./appsettings.json:/app/appsettings.json:ro
+    
+
  
 configs:
   rabbitmq-plugins:
@@ -51,4 +102,4 @@ volumes:
     driver: local
   rabbitmq_log:
     driver: local
-
+  
