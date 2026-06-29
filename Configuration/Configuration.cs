@@ -65,7 +65,7 @@ public static class Configuration
 
     public static async Task<IServiceCollection> AddMessagingServicesAsync(this IServiceCollection services, IConfiguration configuration)
     {
-        var factory = new ConnectionFactory
+        ConnectionFactory factory = new ConnectionFactory
         {
             HostName = configuration["RabbitMQ:Host"]!,
             UserName = Environment.GetEnvironmentVariable("RabbitMQUsername")!,

@@ -52,7 +52,7 @@ public class RabbitMQPublisher:IRabbitMQPublisher
         
 
 
-        var properties = new BasicProperties
+        BasicProperties properties = new BasicProperties
         {
             DeliveryMode = DeliveryModes.Persistent ,
         };
