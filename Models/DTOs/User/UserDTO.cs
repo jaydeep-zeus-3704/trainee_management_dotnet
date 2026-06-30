@@ -13,7 +13,9 @@ public class UserDTO
     public required string Email{get;set;}
 
     [Required(ErrorMessage ="password is required")]
-    public  required string password{get;set;}
-    
+    public  required string Password{get;set;}
+
+    [Required(ErrorMessage ="Role is required")]
+    public required UserRole Role {get;set;}
 
 }

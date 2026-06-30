@@ -6,6 +6,7 @@ public class ProcessingJob
 {
     public int Id{get;set;}
 
+    [Required()]
     public int Attempts {get;set;}
 
     public JobStatus Status {get;set;}
