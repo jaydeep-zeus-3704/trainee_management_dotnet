@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using trainee_management.Enums;
 using trainee_management.Models.DTOs;
+using trainee_management.Constants;
 namespace trainee_management.Models.Entities;
 
 
@@ -11,25 +12,29 @@ public class Trainee
 {
     public  int Id{get; set;}
     
-    [Required(ErrorMessage ="FirstName is required")]
-    [MinLength(2,ErrorMessage ="First name should contain minimum 2 characters")]
-    [MaxLength(50,ErrorMessage ="First name should contain maximum 50 characters")]
+    [Required(ErrorMessage =StringConstant.FIRST_NAME_REQUIRED)]
+    [MinLength(2,ErrorMessage =StringConstant.FIRST_NAME_MIN_CHARACTER)]
+    [MaxLength(50,ErrorMessage =StringConstant.FIRST_NAME_MAX_CHARACTER)]
     public  string FirstName {get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="LastName is required")]
-    [MinLength(2,ErrorMessage ="Last name should contain minimum 2 characters")]
-    [MaxLength(50,ErrorMessage ="Last name should contain maximum 50 characters")]
+    [Required(ErrorMessage =StringConstant.LAST_NAME_REQUIRED)]
+    [MinLength(2,ErrorMessage =StringConstant.LAST_NAME_MIN_CHARACTER)]
+    [MaxLength(50,ErrorMessage =StringConstant.LAST_NAME_MAX_CHARACTER)]
     public string LastName{get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="Email is required")]
+
+
+    [Required(ErrorMessage =StringConstant.EMAIL_REQUIRED)]
+    [Length(6,100,ErrorMessage =StringConstant.EMAIL_CHARACTER_LIMIT)]
     [EmailAddress]
     public string Email{get;set;}=string.Empty;
     
-    [Required(ErrorMessage ="Techstack is required")]
+    [Required(ErrorMessage =StringConstant.TECH_STACK_REQUIRED)]
     public  string TechStack{get;set;}=string.Empty;
 
     
-    [Required(ErrorMessage ="Status is required ")]
+    [Required(ErrorMessage =StringConstant.STATUS_REQUIRED)]
+    [EnumDataType(typeof(StatusValues),ErrorMessage =StringConstant.VALID_STATUS_REQUIRED)]
     public  StatusValues Status{get;set;}
     public DateTime CreatedDate {get;set;}
     public DateTime UpdatedDate {get;set;}

@@ -13,12 +13,14 @@ public class LocalStorageService : IFileStorageSerivce
    private readonly string _storage_path;
    private readonly IRabbitMQPublisher  _publisher;
 
-   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher)
+   private readonly IConfiguration _configuration;
+
+   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration)
    {
     _context=context;
     _storage_path=Environment.GetEnvironmentVariable("LocalStorage")!;
     _publisher=publisher;
-    
+    _configuration=configuration;
    }
 
     public async Task<SubmissionFilesResponse> SaveAsync(IFormFile file,int userId,int submissionId)
@@ -57,7 +59,7 @@ public class LocalStorageService : IFileStorageSerivce
             FileId=data.Id,
             MessageId=Guid.NewGuid(),
             CorrelationId=correlationId,
-            ContractVersion=1,
+            ContractVersion=int.Parse(_configuration["RabbitMQMessage:ContractVersion"]!),
             RequestedAt=DateTime.UtcNow,
             SubmissionId=submissionId
         };
@@ -106,7 +108,6 @@ public class LocalStorageService : IFileStorageSerivce
         string FilePath=Path.Combine(_storage_path,FileName);
         if (!File.Exists(FilePath))
             throw new FileNotFoundException($"File not found: {FilePath}");
-        // Open sequentially and read asynchronously
         FileStream stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
         return stream;
     }

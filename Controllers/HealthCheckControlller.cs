@@ -9,7 +9,6 @@ public class HealthCheckController : ControllerBase
 {
     private readonly HealthCheckService _healthCheckService;
 
-    // The framework automatically provides this service
     public HealthCheckController(HealthCheckService healthCheckService)
     {
         _healthCheckService = healthCheckService;
@@ -17,7 +16,7 @@ public class HealthCheckController : ControllerBase
 
     [HttpGet("check")]
     public async Task<IActionResult> GetSystemReport()
-    {
+    {   
         HealthReport report = await _healthCheckService.CheckHealthAsync();
         var customResponse = new
         {

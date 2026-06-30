@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using trainee_management.Constants;
 using trainee_management.Enums;
 using trainee_management.Models.Entities;
 
@@ -8,24 +9,25 @@ public class Review
     [Key]
     public int Id {get;set;}
 
-    [Required(ErrorMessage ="Submission  id is required")]
+    [Required(ErrorMessage =StringConstant.SUBMISSION_ID_REQUIRED)]
     [ForeignKey("Id")]
     public int SubmissionId {get;set;}
     public  Submission? Submission{get;set;}
     
-    [Required(ErrorMessage ="Mentor  id is required")]
+    [Required(ErrorMessage =StringConstant.MENTOR_ID_REQUIRED)]
     [ForeignKey("Id")]
     public int MentorId {get;set;}
     public  Mentor? Mentor{get;set;}
     
-    [Required(ErrorMessage ="Mentor feedback is required")]
-    [Length(5,150,ErrorMessage ="feedback should be between minimum 5 characters and maximum 50 characters")]
+    [Required(ErrorMessage =StringConstant.FEED_BACK_REQUIRED)]
+    [MaxLength(200,ErrorMessage =StringConstant.FEED_BACK_CHARACTER_LIMIT)]
     public string MentorFeedback{get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="Reviewed Date required")]
+    [Required(ErrorMessage =StringConstant.REVIEWED_DATE_REQUIRED)]
     public DateOnly ReviewedDate {get;set;}
-
-    [Required(ErrorMessage ="Status is required")]
+    
+    [EnumDataType(typeof(ReviewStatus),ErrorMessage =StringConstant.VALID_STATUS_REQUIRED)]
+    [Required(ErrorMessage =StringConstant.STATUS_REQUIRED)]
     public ReviewStatus Status{get;set;}
 
     public int? Score;

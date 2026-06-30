@@ -5,6 +5,9 @@ using trainee_management.Models.Entities;
 using trainee_management.Enums;
 using trainee_management.Utils;
 using trainee_management.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace trainee_management.Services;
 
 public class UserService : IUserService
@@ -20,14 +23,14 @@ public class UserService : IUserService
 
     public void CreateUser(UserDTO request)
     {
-        string hashedPassword=PasswordUtils.hashPassword(request.Username,request.password);
+        string hashedPassword=PasswordUtils.hashPassword(request.Username,request.Password);
 
         User user=new User
         {
             Username=request.Username,
             Email=request.Email,
             PasswordHash=hashedPassword,
-            Role=UserRole.ADMIN,
+            Role=request.Role,
             createdAt=DateTime.UtcNow,
             updatedAt=DateTime.UtcNow
         };
@@ -44,7 +47,7 @@ public class UserService : IUserService
             throw new NotFoundException($"User with username {request.Username} not found");
         }
         
-        bool verified=PasswordUtils.verifyPassword(user.Username,request.password,user.PasswordHash);
+        bool verified=PasswordUtils.verifyPassword(user.Username,request.Password,user.PasswordHash);
         if (!verified)
         {
             throw new InvalidCredentialsException("Invalid Credentials please try different password");

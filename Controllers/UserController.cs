@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using trainee_management.Models.DTOs;
 using trainee_management.Services;
@@ -27,6 +29,7 @@ public class UserController : ControllerBase
         return StatusCode(StatusCodes.Status200OK,res);
     }
 
+    [Authorize(Roles ="ADMIN",AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost("register")]
     public IActionResult RegisterUser(UserDTO request)
     {   
