@@ -5,6 +5,9 @@ public class StringConstant
     public const string FIRST_NAME_REQUIRED = "First name is required";
     public const string FIRST_NAME_MAX_CHARACTER = "First name cannot exceed 50 character";
     public const string FIRST_NAME_MIN_CHARACTER = "First name should be atleast 2 characters";
+    public const string USERNAME_REQUIRED = "Username is required";
+    public const string USERNAME_MAX_CHARACTER = "Username cannot exceed 50 character";
+    public const string USERNAME_MIN_CHARACTER = "Username should be atleast 2 characters";
     
     public const string LAST_NAME_REQUIRED = "Last name is required";
     public const string LAST_NAME_MAX_CHARACTER = "Last name cannot exceed 50 character";
@@ -37,7 +40,7 @@ public class StringConstant
     public const string ROLE_MENTOR = "Mentor";
     public const string ROLE_TRAINEE = "Trainee";
  
-    public const string USERNAME_REQUIRED = "UserName is required";
+
  
     public const string PASSWORD_REQUIRED = "Password is required";
  

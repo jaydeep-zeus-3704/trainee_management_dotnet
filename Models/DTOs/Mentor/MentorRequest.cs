@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using trainee_management.Constants;
 using trainee_management.Enums;
 namespace trainee_management.Models.Entities;
 
@@ -7,19 +8,28 @@ namespace trainee_management.Models.Entities;
 
 public class MentorRequest
 {
-    [Required(ErrorMessage ="FirstName is required")]
-    public  required  string  FirstName{get;set;}
+   [Required(ErrorMessage =StringConstant.FIRST_NAME_REQUIRED)]
+    [MinLength(2,ErrorMessage =StringConstant.FIRST_NAME_MIN_CHARACTER)]
+    [MaxLength(50,ErrorMessage =StringConstant.FIRST_NAME_MAX_CHARACTER)]
+    public string FirstName{get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="LastName is required")]
-    public  required  string  LastName{get;set;}
+    [Required(ErrorMessage =StringConstant.LAST_NAME_REQUIRED)]
+    [MinLength(2,ErrorMessage =StringConstant.LAST_NAME_MIN_CHARACTER)]
+    [MaxLength(50,ErrorMessage =StringConstant.LAST_NAME_MAX_CHARACTER)]
 
-    [Required(ErrorMessage ="email is required")]
+    public   string  LastName{get;set;}=string.Empty;
+
+    [Required(ErrorMessage =StringConstant.EMAIL_REQUIRED)]
+    [Length(6,100,ErrorMessage =StringConstant.EMAIL_CHARACTER_LIMIT)]
     [EmailAddress]
-    public required string Email{get;set;}
+    public  string Email{get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="expertise is required")]
-    public  required string Expertise{get;set;}
+    [Required(ErrorMessage =StringConstant.EXPERTISE_REQUIRED)]
+    [MaxLength(200,ErrorMessage =StringConstant.EXPERTISE_CHARACTER_LIMIT)]
+    public   string Expertise{get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="Mentor Status is required")]
-    public required MentorStatus Status{get;set;}
+    [Required(ErrorMessage =StringConstant.STATUS_REQUIRED)]
+    [EnumDataType(typeof(MentorStatus),ErrorMessage =StringConstant.VALID_STATUS_REQUIRED)]
+    public  MentorStatus Status{get;set;}
+
 }

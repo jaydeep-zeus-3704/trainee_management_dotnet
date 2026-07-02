@@ -1,26 +1,33 @@
 using System.ComponentModel.DataAnnotations;
+using trainee_management.Constants;
 using trainee_management.Enums;
 
 namespace trainee_management.Models;
 
 public class LearningTaskRequest
 {
-    [Required(ErrorMessage ="Title is required")]
-    [StringLength(50, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 20 characters.")]
+
+    [Required(ErrorMessage =StringConstant.TITLE_REQUIRED)]
+    [Length(5,200,ErrorMessage =StringConstant.TITLE_CHARACTER_LIMIT)]
     public string Title{get;set;}=string.Empty;
 
     
-    [Required(ErrorMessage ="Description is required")]
-    [StringLength(150, MinimumLength = 5, ErrorMessage = "Description must be between 5 and 20 characters.")]
+    [Required(ErrorMessage =StringConstant.DESCRIPTION_REQUIRED)]
+    [Length(5,200,ErrorMessage =StringConstant.DESCRIPTION_CHARACTER_LIMIT)]
     public string Description{get;set;}=string.Empty;
     
-    [Required(ErrorMessage ="ExpectedTechStack is required")]
+    [Required(ErrorMessage =StringConstant.EXPECTED_TECH_STACK_REQUIRED)]
+    [Length(5,200,ErrorMessage =StringConstant.EXPECTED_TECH_STACK_CHARACTER_LIMIT)]
+
     public string ExpectedTechStack{get;set;}=string.Empty;
 
-    [Required(ErrorMessage ="Due Date is required")]
+    [Required(ErrorMessage =StringConstant.DUE_DATE_REQUIRED)]
     public DateOnly DueDate {get;set;}
 
+    [Required(ErrorMessage =StringConstant.STATUS_REQUIRED)]
+    [EnumDataType(typeof(LearningTaskStatus),ErrorMessage =StringConstant.VALID_STATUS_REQUIRED)]
     public LearningTaskStatus Status {get;set;}
+
 
    public LearningTaskRequest(LearningTask learningTask)
     {
@@ -35,6 +42,4 @@ public class LearningTaskRequest
     {
         
     }
-
-
 }
