@@ -5,7 +5,7 @@ COPY . .
 
 ARG CODEARTIFACT_TOKEN
 ARG NUGET_SOURCE
-
+ARG REPOSITORY_SOURCE
 RUN dotnet nuget remove source CodeArtifact || true
 RUN dotnet nuget remove source codeartifact || true
 
@@ -25,7 +25,7 @@ RUN dotnet restore \
 
 RUN dotnet publish -c Release -o /app/publish
 
-FROM docker-registry-002.zeuslearning.com/zeuslearning/dotnet/aspnet:10.0-alpine
+FROM "$REPOSITORY_SOURCE"
 
 WORKDIR /app
 

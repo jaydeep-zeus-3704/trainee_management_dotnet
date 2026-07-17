@@ -2,12 +2,8 @@
 using trainee_management.Database;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
-using trainee_management.Enums;
 using trainee_management.Utils;
 using trainee_management.Exceptions;
-using Microsoft.AspNetCore.Authorization;
-using StackExchange.Redis;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace trainee_management.Services;
 
 public class UserService : IUserService

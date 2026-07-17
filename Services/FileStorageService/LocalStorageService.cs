@@ -15,12 +15,15 @@ public class LocalStorageService : IFileStorageSerivce
 
    private readonly IConfiguration _configuration;
 
-   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration)
+   private readonly ICacheService _cache_service;
+
+   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration,ICacheService cache_service)
    {
     _context=context;
     _storage_path=Environment.GetEnvironmentVariable("LocalStorage")!;
     _publisher=publisher;
     _configuration=configuration;
+    _cache_service=cache_service;
    }
 
     public async Task<SubmissionFilesResponse> SaveAsync(IFormFile file,int userId,int submissionId)
@@ -69,6 +72,7 @@ public class LocalStorageService : IFileStorageSerivce
             Status=JobStatus.QUEUED,
             CorrelationId=correlationId,
         };
+        await _cache_service.SetDataAsync($"retry-count-{correlationId}","0");
         await _context.ProcessingJob.AddAsync(job);
         await _context.SaveChangesAsync();
         await _publisher.PublishMessageAsync(message);

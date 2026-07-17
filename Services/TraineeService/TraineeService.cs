@@ -5,8 +5,6 @@ using trainee_management.Validator;
 using trainee_management.Exceptions;
 using trainee_management.Database;
 using trainee_management.Enums;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
 namespace trainee_management.Services
 {
 
