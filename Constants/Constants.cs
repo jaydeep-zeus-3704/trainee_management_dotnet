@@ -2,6 +2,7 @@ namespace trainee_management.Constants;
 
 public class StringConstant
 {
+    
     public const string FIRST_NAME_REQUIRED = "First name is required";
     public const string FIRST_NAME_MAX_CHARACTER = "First name cannot exceed 50 character";
     public const string FIRST_NAME_MIN_CHARACTER = "First name should be atleast 2 characters";

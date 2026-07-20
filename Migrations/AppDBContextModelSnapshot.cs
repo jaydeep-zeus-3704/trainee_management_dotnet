@@ -113,9 +113,14 @@ namespace trainee_management.Migrations
                     b.Property<int>("TaskAssignmentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TraineeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TaskAssignmentId");
+
+                    b.HasIndex("TraineeId");
 
                     b.ToTable("Submission");
                 });
@@ -386,7 +391,15 @@ namespace trainee_management.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("trainee_management.Models.Entities.Trainee", "Trainee")
+                        .WithMany()
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("TaskAssignment");
+
+                    b.Navigation("Trainee");
                 });
 
             modelBuilder.Entity("trainee_management.Models.Entities.Metadata", b =>

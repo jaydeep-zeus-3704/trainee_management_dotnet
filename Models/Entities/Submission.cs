@@ -16,7 +16,16 @@ public class Submission
 
     [DeleteBehavior(DeleteBehavior.Cascade)] 
     public  TaskAssignment? TaskAssignment{get;set;}
+
+
     
+    [Required(ErrorMessage =StringConstant.TRAINEE_ID_REQUIRED)]
+    public int TraineeId {get;set;}
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)]
+    public Trainee ? Trainee {get;set;}
+
+
     [Required(ErrorMessage =StringConstant.SUBMISSION_URL_REQUIRED)]
     [Length(4,200,ErrorMessage =StringConstant.SUBMISSION_URL_CHARACTER_LIMIT)]
     public string SubmissionUrl{get;set;}=string.Empty;
@@ -33,8 +42,9 @@ public class Submission
     [EnumDataType(typeof(SubmittedStatus),ErrorMessage =StringConstant.VALID_STATUS_REQUIRED)]
     public SubmittedStatus Status{get;set;}
 
-    public Submission(SubmissionRequest request)
+    public Submission(SubmissionRequest request,int traineeId)
     {
+        TraineeId=traineeId;
         TaskAssignmentId=request.TaskAssignmentId;
         SubmissionUrl=request.SubmissionUrl;
         Notes=request.Notes;

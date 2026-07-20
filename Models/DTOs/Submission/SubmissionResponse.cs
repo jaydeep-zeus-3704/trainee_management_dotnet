@@ -6,8 +6,12 @@ public class SubmissionResponse
 {
     public int Id {get;set;}
 
+
+    [Required(ErrorMessage ="Trainee id is required")]
+    public int TraineeId{get;set;}
+
+
     [Required(ErrorMessage ="Task assignment id is required")]
-    [ForeignKey("Id")]
     public int TaskAssignmentId {get;set;}
     
     [Required(ErrorMessage ="SubmissionUrl is required")]
