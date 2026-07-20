@@ -5,8 +5,9 @@ using trainee_management.Validator;
 using trainee_management.Exceptions;
 using trainee_management.Database;
 using trainee_management.Enums;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
+using System.Security.Claims;
+
+
 namespace trainee_management.Services
 {
 
@@ -14,10 +15,12 @@ namespace trainee_management.Services
     {
         private readonly AppDBContext _context;
         private readonly ICacheService _cache_service;
-        public TraineeService(ICacheService cache_service, AppDBContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public TraineeService(ICacheService cache_service, AppDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _cache_service = cache_service;
+            _httpContextAccessor=httpContextAccessor;
         }
 
         public async Task<Trainee?> GetTraineeById(int id)
@@ -64,7 +67,26 @@ namespace trainee_management.Services
 
         public async Task CreateTrainee(CreateTraineeRequest request)
         {
-            Trainee trainee = new Trainee(request);
+            if (_httpContextAccessor.HttpContext!=null)
+            {
+                bool isTrainee= _httpContextAccessor.HttpContext.User.IsInRole("TRAINEE"); 
+ 
+                if(!isTrainee) throw new ForbidenException("Forbidden, User with role admin/mentor cannot perform this operation"); 
+            }
+            else
+            {
+                throw new ForbidenException("Forbidden");
+            }
+
+            int  traineeId=int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!); 
+            string  traineeEmail=_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email)!; 
+
+            bool foundTrainee=await _context.Trainee.AnyAsync(trainee=>trainee.Id==traineeId)  ;
+
+            await CheckIfTraineeExists(request.Email);
+            //check if trainee table already has Id same as traineeId;
+            if(foundTrainee)  throw new ForbidenException("Trainee information already filled"); 
+            Trainee trainee = new Trainee(request,traineeId);
             TraineeValidator validator = new TraineeValidator(trainee);
             if (!validator.Validate()) throw new ValidationException("Invalid Input");
             await _context.Trainee.AddAsync(trainee);

@@ -2,7 +2,6 @@
 namespace trainee_management.Models.DTOs;
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using trainee_management.Constants;
 using trainee_management.Enums;
 
@@ -16,7 +15,6 @@ public class TaskAssignmentRequest
     
     public  int LearningTaskId{get;set;}
 
-    public  LearningTask? LearningTask {get;set;}
 
     [Required(ErrorMessage =StringConstant.MENTOR_ID_REQUIRED)]
     public  int MentorId{get;set;}

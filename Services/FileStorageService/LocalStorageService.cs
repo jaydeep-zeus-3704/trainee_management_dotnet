@@ -5,6 +5,7 @@ using trainee_management.Enums;
 using trainee_management.Exceptions;
 using trainee_management.Models.DTOs;
 using trainee_management.Models.Entities;
+using System.Security.Claims;
 
 namespace trainee_management.Services;
 public class LocalStorageService : IFileStorageSerivce
@@ -12,26 +13,52 @@ public class LocalStorageService : IFileStorageSerivce
    private readonly AppDBContext _context;
    private readonly string _storage_path;
    private readonly IRabbitMQPublisher  _publisher;
-
+   private readonly IHttpContextAccessor _httpContextAccessor;
    private readonly IConfiguration _configuration;
 
-   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration)
+   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration,IHttpContextAccessor httpContextAccessor)
    {
     _context=context;
     _storage_path=Environment.GetEnvironmentVariable("LocalStorage")!;
     _publisher=publisher;
     _configuration=configuration;
+    _httpContextAccessor=httpContextAccessor;
    }
 
     public async Task<SubmissionFilesResponse> SaveAsync(IFormFile file,int userId,int submissionId)
     {
         FileValidator.validateFile(file);
-        bool submissionExists=await _context.Submission.AsNoTracking().AnyAsync(submission=>submission.Id==submissionId);
-        if(!submissionExists) throw new ValidationException("Invalid Submission Id");
+         if (_httpContextAccessor.HttpContext!=null)
+        {
+           bool isTrainee= _httpContextAccessor.HttpContext.User.IsInRole("TRAINEE");  
+           if(!isTrainee) throw new NotFoundException("Forbidden, User with role admin/mentor cannot perform this operation"); 
+        }
+        else
+        {
+            throw new ForbidenException("Forbidden");
+        }
+        var submission = await _context.Submission
+            .Include(s => s.TaskAssignment)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == submissionId);
+
+        if (submission == null || submission.TaskAssignment == null)
+            throw new ValidationException("Invalid Submission Id");
+
+        int TraineeId=submission.TaskAssignment.TraineeId ;
+        Trainee trainee=await _context.Trainee.FindAsync(TraineeId) ?? 
+        throw new NotFoundException("Trainee not found !");
+
+        string currentUserEmail=_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email)!;
+        if (!trainee.Email.Equals(currentUserEmail))
+        {
+            throw new UnauthorizedAccessException("You are not allowed to upload files to this submission.");
+        }
+
         string originalFileName=file.FileName;
         string fileName=Guid.NewGuid().ToString()+Path.GetExtension(originalFileName);
         string filePath=Path.Combine(_storage_path+fileName);
-
+        
         {
         using FileStream stream=new FileStream(filePath,FileMode.Create);
         await file.CopyToAsync(stream);

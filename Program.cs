@@ -10,7 +10,7 @@ Env.Load();
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 
-
+builder.Services.AddHttpContextAccessor();
 // Configure Server Limits
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {

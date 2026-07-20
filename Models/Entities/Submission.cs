@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using trainee_management.Constants;
 using trainee_management.Enums;
 using trainee_management.Models.Entities;
@@ -11,8 +12,9 @@ public class Submission
     
 
     [Required(ErrorMessage =StringConstant.TASK_ASSIGNMENT_ID_REQUIRED)]
-    [ForeignKey("Id")]
     public int TaskAssignmentId {get;set;}
+
+    [DeleteBehavior(DeleteBehavior.Cascade)] 
     public  TaskAssignment? TaskAssignment{get;set;}
     
     [Required(ErrorMessage =StringConstant.SUBMISSION_URL_REQUIRED)]

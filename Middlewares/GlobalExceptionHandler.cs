@@ -78,6 +78,9 @@ namespace trainee_management.Middlewares
                 case FileSizeException:
                     context.Response.StatusCode=StatusCodes.Status413PayloadTooLarge;
                     break;
+                case ForbidenException:
+                    context.Response.StatusCode=StatusCodes.Status403Forbidden;
+                    break;
                 default:
                     context.Response.StatusCode=StatusCodes.Status500InternalServerError;
                     break;

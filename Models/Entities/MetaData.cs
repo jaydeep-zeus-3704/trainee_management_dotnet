@@ -19,7 +19,6 @@ public class Metadata
     [Length(2,50,ErrorMessage =StringConstant.GENERATED_STORAGE_NAME_CHARACTER_LIMIT)]
     public string GeneratedStorageName{get;set;}=string.Empty; 
     
-    [ForeignKey("Id")]
     [Required(ErrorMessage =StringConstant.SUBMISSION_ID_REQUIRED)]
     public int SubmissionId {get;set;}
     public Submission? Submission {get;set;}

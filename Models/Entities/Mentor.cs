@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Org.BouncyCastle.Bcpg;
 using trainee_management.Constants;
 using trainee_management.Enums;
 namespace trainee_management.Models.Entities;
@@ -38,8 +39,9 @@ public class Mentor
     public DateTime updatedAt {get;set;}
 
 
-    public Mentor(MentorRequest request)
+    public Mentor(MentorRequest request,int UserId)
     {
+        Id=UserId;
         FirstName=request.FirstName;
         LastName=request.LastName;
         Expertise=request.Expertise;

@@ -5,6 +5,15 @@ public class NotFoundException : Exception
     public NotFoundException(string message):base(message){}
 }
 
+public class UserAlreadyExistsException : Exception
+{
+    public UserAlreadyExistsException(string message):base(message){}
+}
+public class ForbidenException : Exception
+{
+    public ForbidenException(string message):base(message){}
+}
+
 
 public class ValidationException:Exception
 {

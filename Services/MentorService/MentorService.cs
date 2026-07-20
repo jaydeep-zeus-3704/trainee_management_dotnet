@@ -1,4 +1,5 @@
 
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using trainee_management.Database;
 using trainee_management.Enums;
@@ -11,15 +12,27 @@ namespace trainee_management.Services;
 public class MentorService : IMentorService
 {
     private readonly AppDBContext _context;
-    public MentorService(AppDBContext context)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public MentorService(AppDBContext context,IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor=httpContextAccessor;
     }
 
     public async Task CreateMentor(MentorRequest request)
     {
+        if (_httpContextAccessor.HttpContext!=null){
+                bool isMentor= _httpContextAccessor.HttpContext.User.IsInRole("MENTOR"); 
+                if(!isMentor) throw new ForbidenException("User with role admin/trainee cannot perform this operation"); 
+        }
+        else throw new ForbidenException("Forbidden");
+        
         await MentorExistsByEmail(request.Email);
-        Mentor mentor = new Mentor(request);
+
+        int id=int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        bool foundMentor=await _context.Mentor.AnyAsync(mentor=>mentor.Id==id);
+        if(foundMentor) throw new UserAlreadyExistsException("Mentor already exists for the current Id. Mentor Information already exists"); 
+        Mentor mentor = new Mentor(request,id);
         MentorValidator validator = new MentorValidator(mentor);
         if (!validator.Validate())
         {

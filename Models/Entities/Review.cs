@@ -10,12 +10,10 @@ public class Review
     public int Id {get;set;}
 
     [Required(ErrorMessage =StringConstant.SUBMISSION_ID_REQUIRED)]
-    [ForeignKey("Id")]
     public int SubmissionId {get;set;}
     public  Submission? Submission{get;set;}
     
     [Required(ErrorMessage =StringConstant.MENTOR_ID_REQUIRED)]
-    [ForeignKey("Id")]
     public int MentorId {get;set;}
     public  Mentor? Mentor{get;set;}
     

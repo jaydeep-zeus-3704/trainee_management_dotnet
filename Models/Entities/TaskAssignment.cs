@@ -3,6 +3,7 @@ namespace trainee_management.Models.Entities;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using trainee_management.Constants;
 using trainee_management.Enums;
 using trainee_management.Models.DTOs;
@@ -12,25 +13,23 @@ public class TaskAssignment
     [Key]
     public int Id {get;set;}
     
-    [ForeignKey("Id")]
     [Required(ErrorMessage =StringConstant.TRAINEE_ID_REQUIRED)]
     public  int TraineeId {get;set;}
 
+    [DeleteBehavior(DeleteBehavior.Cascade)] 
+
     public  Trainee? Trainee {get;set;}
 
-
-
-   [ForeignKey("Id")]
    [Required(ErrorMessage =StringConstant.LEARNING_TASK_ID_REQUIRED)]
     
     public  int LearningTaskId{get;set;}
 
+    [DeleteBehavior(DeleteBehavior.Cascade)] 
     public  LearningTask? LearningTask {get;set;}
-
-
+    
+    [DeleteBehavior(DeleteBehavior.Cascade)] 
     public  Mentor? Mentor {get;set;}
 
-    [ForeignKey("Id")]
     [Required(ErrorMessage =StringConstant.MENTOR_ID_REQUIRED)]
     public  int MentorId{get;set;}
 

@@ -39,8 +39,9 @@ public class Trainee
     public DateTime CreatedDate {get;set;}
     public DateTime UpdatedDate {get;set;}
 
-    public Trainee(CreateTraineeRequest request)
+    public Trainee(CreateTraineeRequest request,int TraineeId)
     {
+        Id=TraineeId;
         FirstName=request.FirstName;
         LastName=request.LastName;
         Email=request.Email;
