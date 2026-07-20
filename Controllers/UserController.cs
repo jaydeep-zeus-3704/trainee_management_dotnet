@@ -29,7 +29,7 @@ public class UserController : ControllerBase
         return StatusCode(StatusCodes.Status200OK,res);
     }
 
-    // [Authorize(Roles ="ADMIN",AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles ="ADMIN",AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost("register")]
     public IActionResult RegisterUser(UserDTO request)
     {   

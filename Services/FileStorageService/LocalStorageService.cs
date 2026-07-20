@@ -18,13 +18,15 @@ public class LocalStorageService : IFileStorageSerivce
 
    private readonly ICacheService _cache_service;
 
-   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration,ICacheService cache_service)
+   public LocalStorageService(AppDBContext context,IRabbitMQPublisher publisher,IConfiguration configuration,
+   ICacheService cache_service,IHttpContextAccessor httpContextAccessor)
    {
     _context=context;
     _storage_path=Environment.GetEnvironmentVariable("LocalStorage")!;
     _publisher=publisher;
     _configuration=configuration;
     _cache_service=cache_service;
+    _httpContextAccessor=httpContextAccessor;
    }
 
     public async Task<SubmissionFilesResponse> SaveAsync(IFormFile file,int userId,int submissionId)
